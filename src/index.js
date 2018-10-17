@@ -42,22 +42,11 @@ const getRepo = async (octokit, { owner, repo }) => {
 	return repoMeta.data;
 };
 
-const main = async () => {
-	program
-		.version('1.0.0')
-		.option(
-			'-r, --repo <repo>',
-			'GitHub repository e.g. https://github.com/github-organization/github-repo-name'
-		)
-		.option(
-			'-t, --token <token>',
-			'GitHub Personal Access Token (must have all repo scopes)'
-		)
-		.parse(process.argv);
+const commandAdd = async (cmd) => {
 
-	const { owner, repo } = parseGithubRepo(program.repo);
+	const { owner, repo } = parseGithubRepo(cmd.repo);
 
-	const githubPersonalAccessToken = program.token;
+	const githubPersonalAccessToken = cmd.token;
 
 	console.log('-- The options you have specified have been parsed as:\n');
 	console.log(`-- GitHub organisation: ${owner}`);
@@ -101,10 +90,30 @@ const main = async () => {
 	});
 };
 
-(async () => {
-	try {
-		await main();
-	} catch (err) {
-		console.error(`ERROR: ${err.message}`);
-	}
-})();
+program
+	.version('1.0.0')
+	.command('add')
+	.option(
+		'-r, --repo <repo>',
+		'GitHub repository e.g. https://github.com/github-organization/github-repo-name'
+	)
+	.option(
+		'-t, --token <token>',
+		'GitHub Personal Access Token (must have all repo scopes)'
+	)
+	.action(async (cmd) => {
+		try {
+			if (!cmd.repo) {
+				throw new Error('Missing --repo option, run this command with --help` for usage');
+			}
+			if (!cmd.token) {
+				throw new Error('Missing --token option, run this command with --help` for usage');
+			}
+
+			await commandAdd(cmd);
+		} catch (err) {
+			console.error(`ERROR: ${err.message}`);
+		}
+	});
+
+program.parse(process.argv);
