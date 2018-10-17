@@ -20,7 +20,8 @@
   },
   "homepage": "https://github.com/financial-times-sandbox/manage-github-apps#readme",
   "dependencies": {
-    "@octokit/rest": "^15.13.1"
+    "@octokit/rest": "^15.13.1",
+    "commander": "^2.19.0"
   },
   "devDependencies": {
     "eslint": "^5.7.0",

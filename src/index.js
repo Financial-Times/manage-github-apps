@@ -2,12 +2,8 @@
 
 /* eslint-disable no-console */
 
-const assert = require('assert');
+const program = require('commander');
 const Octokit = require('@octokit/rest');
-
-const octokit = new Octokit({
-	debug: true
-});
 
 const authenticateWithToken = (octokit, token) => {
 
@@ -35,13 +31,27 @@ const getRepo = async (octokit, { githubRepoOwner, githubRepoName }) => {
 
 const main = async () => {
 
-	const githubRepo = process.env.GITHUB_REPO;
+	program
+		.version('1.0.0')
+		.option('-r, --repo <repo>', 'GitHub repository e.g. github-organization/github-repo-name')
+		.option('-t, --token <token>', 'GitHub Personal Access Token (must have all repo scopes)')
+		.parse(process.argv);
+
+	const githubRepo = program.repo;
 	const [githubRepoOwner, githubRepoName] = githubRepo.split('/');
-	const githubPersonalAccessToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
+	const githubPersonalAccessToken = program.token;
+
+	console.log('-- The options you have specified have been parsed as:\n');
+	console.log(`-- GitHub organisation: ${githubRepoOwner}`);
+	console.log(`-- GitHub repo: ${githubRepoName}`);
 
 	const installationsConfigPath = process.cwd() + '/installations.json';
-	console.log(`-- Reading installations config from ${installationsConfigPath}\n`);
+	console.log(`-- Config is being read from ${installationsConfigPath}\n`);
 	const { installations } = require(installationsConfigPath);
+
+	const octokit = new Octokit({
+		debug: true
+	});
 
 	authenticateWithToken(octokit, githubPersonalAccessToken);
 
@@ -52,7 +62,7 @@ const main = async () => {
 	console.log(`✔️  GitHub repo ${githubRepo} exists\n`);
 
 	const addRequests = installations.map((installation) => {
-		console.log(`➕  Adding repo to installation ${installation.name} (https://github.com/organizations/financial-times-sandbox/settings/installations/${installation.id})`);
+		console.log(`➕  Adding repo to installation ${installation.comment} (https://github.com/organizations/financial-times-sandbox/settings/installations/${installation.id})`);
 
 		return octokit.apps.addRepoToInstallation({
 			installation_id: installation.id,
@@ -67,16 +77,6 @@ const main = async () => {
 
 (async () => {
 	try {
-		assert(
-			process.env.GITHUB_REPO,
-			'Environment variable GITHUB_REPO must be set e.g. GitHub-Organization/repo-name'
-		);
-	
-		assert(
-			process.env.GITHUB_PERSONAL_ACCESS_TOKEN,
-			'Environment variable GITHUB_PERSONAL_ACCESS_TOKEN must be set'
-		);
-	
 		await main();
 	} catch (err) {
 		console.error(`ERROR: ${err.message}`);
