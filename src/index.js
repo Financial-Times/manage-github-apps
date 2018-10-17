@@ -44,13 +44,13 @@ const main = async () => {
 	authenticateWithToken(octokit, githubPersonalAccessToken);
 
 	const authenticatedUser = await getAuthenticatedUser(octokit);
-	console.log(`✔️ Authenticated as GitHub user ${authenticatedUser.login}`);
+	console.log(`✔️  Authenticated as GitHub user ${authenticatedUser.login}`);
 
 	const repo = await getRepo(octokit, { githubRepoOwner, githubRepoName });
-	console.log(`✔️ GitHub repo ${githubRepo} exists\n`);
+	console.log(`✔️  GitHub repo ${githubRepo} exists\n`);
 
 	const addRequests = installations.map((installation) => {
-		console.log(`➕ Adding repo to installation ${installation.name} (https://github.com/organizations/financial-times-sandbox/settings/installations/${installation.id})`);
+		console.log(`➕  Adding repo to installation ${installation.name} (https://github.com/organizations/financial-times-sandbox/settings/installations/${installation.id})`);
 
 		return octokit.apps.addRepoToInstallation({
 			installation_id: installation.id,
@@ -59,7 +59,7 @@ const main = async () => {
 	});
 
 	return Promise.all(addRequests).then((responses) => {
-		console.log(`\n➡️ Go to https://github.com/${githubRepo}/settings/installations to see the installed GitHub apps for this repo.`);
+		console.log(`\n➡️  Go to https://github.com/${githubRepo}/settings/installations to see the installed GitHub apps for this repo.`);
 	});
 };
 
