@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+/* eslint-disable no-console */
+
 const assert = require('assert');
 const Octokit = require('@octokit/rest');
 
@@ -58,7 +60,7 @@ const main = async () => {
 		});
 	});
 
-	return Promise.all(addRequests).then((responses) => {
+	return Promise.all(addRequests).then(() => {
 		console.log(`\n➡️  Go to https://github.com/${githubRepo}/settings/installations to see the installed GitHub apps for this repo.`);
 	});
 };
