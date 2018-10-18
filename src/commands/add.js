@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 
 const Octokit = require('@octokit/rest');
+const fs = require('fs');
+const fetch = require('node-fetch');
+const path = require('path');
+const { URL } = require('url');
 
 const githubHelpers = require('../lib/github');
 
@@ -11,6 +15,13 @@ const builder = (yargs) => {
 			alias: 'r',
 			describe: 'GitHub repository e.g. https://github.com/github-organization/github-repo-name',
 			demandOption: true,
+			type: 'string',
+		})
+		.option('config', {
+			alias: 'c',
+			describe: 'Path to JSON configuration (URL or local filepath)',
+			demandOption: true,
+			type: 'string',
 		})
 		.option('token', {
 			alias: 't',
@@ -24,8 +35,38 @@ const handler = async (argv) => {
 	try {
 		await commandAdd(argv);
 	} catch (err) {
-		console.error(`ERROR: ${err.message}`);
+		console.error(`💥  ERROR: ${err.message}`);
+		process.exit(1);
 	}
+};
+
+const configPathLooksLikeUrl = (configPath) => {
+	try {
+		if (new URL(configPath)) {
+			return true;
+		}
+	} catch (err) {}
+
+	return false;
+};
+
+const getConfig = async (configPath) => {
+
+	let config;
+
+	if (configPathLooksLikeUrl(configPath)) {
+		config = await fetch(configPath).then((res) => res.json());
+		console.log(`-- Config: Read from URL '${configPath}'\n`);
+	} else {
+		const localConfigPath = path.resolve(`${process.cwd()}/${configPath}`);
+		if (!fs.existsSync(localConfigPath)) {
+			throw new Error(`Config: Could not find local file '${localConfigPath}'`);
+		}
+		config = require(localConfigPath);
+		console.log(`-- Config: Read from local file '${localConfigPath}'\n`);
+	}
+
+	return config;
 };
 
 const commandAdd = async (argv) => {
@@ -38,9 +79,7 @@ const commandAdd = async (argv) => {
 	console.log(`-- GitHub organisation: ${owner}`);
 	console.log(`-- GitHub repo: ${repo}`);
 
-	const installationsConfigPath = process.cwd() + '/installations.json';
-	console.log(`-- Config is being read from ${installationsConfigPath}\n`);
-	const { installations } = require(installationsConfigPath);
+	const config = await getConfig(argv.config);
 
 	const octokit = new Octokit({
 		debug: true
@@ -54,7 +93,7 @@ const commandAdd = async (argv) => {
 	const repoMeta = await githubHelpers.getRepo(octokit, { owner, repo });
 	console.log(`✔️  GitHub repo ${owner}/${repo} exists\n`);
 
-	const addRequests = installations.map((installation) => {
+	const addRequests = config.installations.map((installation) => {
 		console.log(
 			`➕  Adding repo to installation ${
 				installation.comment
