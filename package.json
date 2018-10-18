@@ -1,7 +1,7 @@
 {
   "name": "manage-github-apps",
   "version": "1.0.0",
-  "description": "A CLI tool for managing the repositories for GitHub app installations",
+  "description": "A CLI tool for managing the repositories for GitHub App installations",
   "bin": {
     "manage-github-apps": "src/index.js",
     "mga": "src/index.js"
