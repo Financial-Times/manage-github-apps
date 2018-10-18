@@ -96,6 +96,11 @@ const commandAdd = async (argv) => {
 
 	const { owner, repo } = githubHelpers.parseGithubRepo(argv.repo);
 
+	const configOwnerAndRepoOwnermatch = (config.owner === owner);
+	if (!configOwnerAndRepoOwnermatch) {
+		throw new Error(`The owner specified by the config (${config.owner}) and the owner of the repo (${owner}) do not match. It is not possible to add the repo to the installations specified by the config.`);
+	}
+
 	const githubPersonalAccessToken = argv.token;
 
 	console.log('ℹ️  The options you have specified have been parsed as:\n');
