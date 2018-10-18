@@ -1,9 +1,11 @@
 {
   "name": "manage-github-apps",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/index.js",
-  "bin": "src/index.js",
+  "description": "A CLI tool for managing the repositories for GitHub app installations",
+  "bin": {
+    "manage-github-apps": "src/index.js",
+    "mga": "src/index.js"
+  },
   "scripts": {
     "lint": "eslint --fix src/",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
@@ -21,6 +23,7 @@
   "homepage": "https://github.com/financial-times-sandbox/manage-github-apps#readme",
   "dependencies": {
     "@octokit/rest": "^15.13.1",
+    "node-fetch": "^2.2.0",
     "yargs": "^12.0.2"
   },
   "devDependencies": {
