@@ -1,7 +1,7 @@
 {
   "name": "manage-github-apps",
   "version": "1.0.0",
-  "description": "A CLI tool for managing the repositories for GitHub app installations",
+  "description": "A CLI tool for managing the repositories for GitHub App installations",
   "bin": {
     "manage-github-apps": "src/index.js",
     "mga": "src/index.js"
@@ -23,6 +23,7 @@
   "homepage": "https://github.com/financial-times-sandbox/manage-github-apps#readme",
   "dependencies": {
     "@octokit/rest": "^15.13.1",
+    "is-my-json-valid": "^2.19.0",
     "node-fetch": "^2.2.0",
     "yargs": "^12.0.2"
   },

@@ -5,8 +5,10 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const path = require('path');
 const { URL } = require('url');
+const validator = require('is-my-json-valid/require');
 
 const githubHelpers = require('../lib/github');
+const validate = validator('../../schemas/config.schema.json');
 
 const builder = (yargs) => {
 
@@ -50,36 +52,60 @@ const configPathLooksLikeUrl = (configPath) => {
 	return false;
 };
 
+const validateConfig = (config) => {
+
+	if (validate(config)) {
+		return true;
+	}
+
+	const formatField = (fieldName) => {
+		return (fieldName === 'data') ? '' : `'${fieldName.replace('data.', "")}' `;
+	};
+
+	const validationErrors = validate.errors.map((err) => {
+		return `- ${formatField(err.field)}${err.message}`;
+	}).join('\n');
+
+	throw new Error(`Config is invalid:\n\n${validationErrors}`);
+};
+
 const getConfig = async (configPath) => {
 
 	let config;
 
 	if (configPathLooksLikeUrl(configPath)) {
 		config = await fetch(configPath).then((res) => res.json());
-		console.log(`-- Config: Read from URL '${configPath}'\n`);
+		console.log(`ℹ️  Config: Read from URL '${configPath}'\n`);
 	} else {
 		const localConfigPath = path.resolve(`${process.cwd()}/${configPath}`);
 		if (!fs.existsSync(localConfigPath)) {
 			throw new Error(`Config: Could not find local file '${localConfigPath}'`);
 		}
 		config = require(localConfigPath);
-		console.log(`-- Config: Read from local file '${localConfigPath}'\n`);
+		console.log(`ℹ️  Config: Read from local file '${localConfigPath}'\n`);
 	}
+
+	validateConfig(config);
 
 	return config;
 };
 
 const commandAdd = async (argv) => {
 
+	const config = await getConfig(argv.config);
+
 	const { owner, repo } = githubHelpers.parseGithubRepo(argv.repo);
+
+	const configOwnerAndRepoOwnermatch = (config.owner === owner);
+	if (!configOwnerAndRepoOwnermatch) {
+		throw new Error(`The owner specified by the config (${config.owner}) and the owner of the repo (${owner}) do not match.\n   It is not possible to add the repo to the installations specified by the config.`);
+	}
 
 	const githubPersonalAccessToken = argv.token;
 
-	console.log('-- The options you have specified have been parsed as:\n');
-	console.log(`-- GitHub organisation: ${owner}`);
-	console.log(`-- GitHub repo: ${repo}`);
-
-	const config = await getConfig(argv.config);
+	console.log('ℹ️  The options you have specified have been parsed as:\n');
+	console.log(`️ℹ️  GitHub organisation: ${owner}`);
+	console.log(`️ℹ️  GitHub repo: ${repo}\n`);
 
 	const octokit = new Octokit({
 		debug: true
