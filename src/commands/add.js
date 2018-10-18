@@ -5,8 +5,10 @@ const fs = require('fs');
 const fetch = require('node-fetch');
 const path = require('path');
 const { URL } = require('url');
+const validator = require('is-my-json-valid/require');
 
 const githubHelpers = require('../lib/github');
+const validate = validator('../../schemas/config.schema.json');
 
 const builder = (yargs) => {
 
@@ -50,6 +52,23 @@ const configPathLooksLikeUrl = (configPath) => {
 	return false;
 };
 
+const validateConfig = (config) => {
+
+	if (validate(config)) {
+		return true;
+	}
+
+	const formatField = (fieldName) => {
+		return (fieldName === 'data') ? '' : `'${fieldName.replace('data.', "")}' `;
+	};
+
+	const validationErrors = validate.errors.map((err) => {
+		return `- ${formatField(err.field)}${err.message}`;
+	}).join('\n');
+
+	throw new Error(`Config is invalid:\n\n${validationErrors}`);
+};
+
 const getConfig = async (configPath) => {
 
 	let config;
@@ -66,10 +85,14 @@ const getConfig = async (configPath) => {
 		console.log(`-- Config: Read from local file '${localConfigPath}'\n`);
 	}
 
+	validateConfig(config);
+
 	return config;
 };
 
 const commandAdd = async (argv) => {
+
+	const config = await getConfig(argv.config);
 
 	const { owner, repo } = githubHelpers.parseGithubRepo(argv.repo);
 
