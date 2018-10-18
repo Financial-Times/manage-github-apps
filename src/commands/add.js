@@ -75,14 +75,14 @@ const getConfig = async (configPath) => {
 
 	if (configPathLooksLikeUrl(configPath)) {
 		config = await fetch(configPath).then((res) => res.json());
-		console.log(`-- Config: Read from URL '${configPath}'\n`);
+		console.log(`ℹ️  Config: Read from URL '${configPath}'\n`);
 	} else {
 		const localConfigPath = path.resolve(`${process.cwd()}/${configPath}`);
 		if (!fs.existsSync(localConfigPath)) {
 			throw new Error(`Config: Could not find local file '${localConfigPath}'`);
 		}
 		config = require(localConfigPath);
-		console.log(`-- Config: Read from local file '${localConfigPath}'\n`);
+		console.log(`ℹ️  Config: Read from local file '${localConfigPath}'\n`);
 	}
 
 	validateConfig(config);
@@ -98,11 +98,9 @@ const commandAdd = async (argv) => {
 
 	const githubPersonalAccessToken = argv.token;
 
-	console.log('-- The options you have specified have been parsed as:\n');
-	console.log(`-- GitHub organisation: ${owner}`);
-	console.log(`-- GitHub repo: ${repo}`);
-
-	const config = await getConfig(argv.config);
+	console.log('ℹ️  The options you have specified have been parsed as:\n');
+	console.log(`️ℹ️  GitHub organisation: ${owner}`);
+	console.log(`️ℹ️  GitHub repo: ${repo}\n`);
 
 	const octokit = new Octokit({
 		debug: true
