@@ -1,19 +1,28 @@
 /* eslint-disable no-console */
 
 const Github = require('../lib/github');
-const { getConfig } = require('../lib/config.js');
+const Config = require('../lib/config.js');
+
+const configSchema = require('../../schemas/config.schema.json');
 
 const main = async (argv) => {
 
 	const github = new Github();
+	const config = new Config({
+		source: argv.config,
+		schema: configSchema
+	});
 
-	const config = await getConfig(argv.config);
+	await config.load();
+
+	console.log(`ℹ️  Config: Read from ${config.sourceDescription}'\n`);
 
 	const { owner, repo } = github.extractOwnerAndRepo(argv.repo);
 
-	const configOwnerAndRepoOwnermatch = (config.owner === owner);
+	const configOwner = config.get('owner');
+	const configOwnerAndRepoOwnermatch = (configOwner === owner);
 	if (!configOwnerAndRepoOwnermatch) {
-		throw new Error(`The owner specified by the config (${config.owner}) and the owner of the repo (${owner}) do not match.\n   It is not possible to add the repo to the installations specified by the config.`);
+		throw new Error(`The owner specified by the config (${configOwner}) and the owner of the repo (${owner}) do not match.\n   It is not possible to add the repo to the installations specified by the config.`);
 	}
 
 	const githubPersonalAccessToken = argv.token;
@@ -30,7 +39,7 @@ const main = async (argv) => {
 	const repoMeta = await github.getRepo({ owner, repo });
 	console.log(`✔️  GitHub repo ${owner}/${repo} exists\n`);
 
-	const addRequests = config.installations.map((installation) => {
+	const addRequests = config.get('installations').map((installation) => {
 		console.log(
 			`➕  Adding repo to installation ${
 				installation.comment
