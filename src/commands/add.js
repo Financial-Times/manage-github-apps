@@ -1,14 +1,9 @@
 /* eslint-disable no-console */
 
 const Octokit = require('@octokit/rest');
-const fs = require('fs');
-const fetch = require('node-fetch');
-const path = require('path');
-const { URL } = require('url');
-const validator = require('is-my-json-valid/require');
 
 const githubHelpers = require('../lib/github');
-const validate = validator('../../schemas/config.schema.json');
+const { getConfig } = require('../lib/config.js');
 
 const builder = (yargs) => {
 
@@ -40,54 +35,6 @@ const handler = async (argv) => {
 		console.error(`💥  ERROR: ${err.message}`);
 		process.exit(1);
 	}
-};
-
-const configPathLooksLikeUrl = (configPath) => {
-	try {
-		if (new URL(configPath)) {
-			return true;
-		}
-	} catch (err) {}
-
-	return false;
-};
-
-const validateConfig = (config) => {
-
-	if (validate(config)) {
-		return true;
-	}
-
-	const formatField = (fieldName) => {
-		return (fieldName === 'data') ? '' : `'${fieldName.replace('data.', "")}' `;
-	};
-
-	const validationErrors = validate.errors.map((err) => {
-		return `- ${formatField(err.field)}${err.message}`;
-	}).join('\n');
-
-	throw new Error(`Config is invalid:\n\n${validationErrors}`);
-};
-
-const getConfig = async (configPath) => {
-
-	let config;
-
-	if (configPathLooksLikeUrl(configPath)) {
-		config = await fetch(configPath).then((res) => res.json());
-		console.log(`ℹ️  Config: Read from URL '${configPath}'\n`);
-	} else {
-		const localConfigPath = path.resolve(`${process.cwd()}/${configPath}`);
-		if (!fs.existsSync(localConfigPath)) {
-			throw new Error(`Config: Could not find local file '${localConfigPath}'`);
-		}
-		config = require(localConfigPath);
-		console.log(`ℹ️  Config: Read from local file '${localConfigPath}'\n`);
-	}
-
-	validateConfig(config);
-
-	return config;
 };
 
 const commandAdd = async (argv) => {
