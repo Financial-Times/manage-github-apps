@@ -1,47 +1,15 @@
 /* eslint-disable no-console */
 
-const Octokit = require('@octokit/rest');
-
-const githubHelpers = require('../lib/github');
+const Github = require('../lib/github');
 const { getConfig } = require('../lib/config.js');
 
-const builder = (yargs) => {
+const main = async (argv) => {
 
-	return yargs
-		.option('repo', {
-			alias: 'r',
-			describe: 'GitHub repository e.g. https://github.com/github-organization/github-repo-name',
-			demandOption: true,
-			type: 'string',
-		})
-		.option('config', {
-			alias: 'c',
-			describe: 'Path to JSON configuration (URL or local filepath)',
-			demandOption: true,
-			type: 'string',
-		})
-		.option('token', {
-			alias: 't',
-			describe: 'GitHub Personal Access Token (must have all repo scopes)',
-			demandOption: true,
-			type: 'string',
-		});
-};
-
-const handler = async (argv) => {
-	try {
-		await commandAdd(argv);
-	} catch (err) {
-		console.error(`💥  ERROR: ${err.message}`);
-		process.exit(1);
-	}
-};
-
-const commandAdd = async (argv) => {
+	const github = new Github();
 
 	const config = await getConfig(argv.config);
 
-	const { owner, repo } = githubHelpers.parseGithubRepo(argv.repo);
+	const { owner, repo } = github.extractOwnerAndRepo(argv.repo);
 
 	const configOwnerAndRepoOwnermatch = (config.owner === owner);
 	if (!configOwnerAndRepoOwnermatch) {
@@ -54,16 +22,12 @@ const commandAdd = async (argv) => {
 	console.log(`️ℹ️  GitHub organisation: ${owner}`);
 	console.log(`️ℹ️  GitHub repo: ${repo}\n`);
 
-	const octokit = new Octokit({
-		debug: true
-	});
+	github.authenticateWithToken(githubPersonalAccessToken);
 
-	githubHelpers.authenticateWithToken(octokit, githubPersonalAccessToken);
-
-	const authenticatedUser = await githubHelpers.getAuthenticatedUser(octokit);
+	const authenticatedUser = await github.getAuthenticatedUser();
 	console.log(`✔️  Authenticated as GitHub user ${authenticatedUser.login}`);
 
-	const repoMeta = await githubHelpers.getRepo(octokit, { owner, repo });
+	const repoMeta = await github.getRepo({ owner, repo });
 	console.log(`✔️  GitHub repo ${owner}/${repo} exists\n`);
 
 	const addRequests = config.installations.map((installation) => {
@@ -75,7 +39,7 @@ const commandAdd = async (argv) => {
 			})`
 		);
 
-		return octokit.apps.addRepoToInstallation({
+		return github.client.apps.addRepoToInstallation({
 			installation_id: installation.id,
 			repository_id: repoMeta.id
 		});
@@ -86,6 +50,41 @@ const commandAdd = async (argv) => {
 			`\n➡️  Go to https://github.com/${owner}/${repo}/settings/installations to see the installed GitHub apps for this repo.`
 		);
 	});
+};
+
+const builder = (yargs) => {
+
+	return yargs
+		.option('repo', {
+			alias: 'r',
+			describe: 'GitHub repository e.g. https://github.com/github-organization/github-repo-name',
+			demandOption: true,
+			type: 'string',
+			// TODO: coerce - check if owner and repo can be extracted
+		})
+		.option('config', {
+			alias: 'c',
+			describe: 'Path to JSON configuration (URL or local filepath)',
+			demandOption: true,
+			type: 'string',
+			// TODO: coerce?
+		})
+		.option('token', {
+			alias: 't',
+			describe: 'GitHub Personal Access Token (must have all repo scopes)',
+			demandOption: true,
+			type: 'string',
+			// TODO: coerce?
+		});
+};
+
+const handler = async (argv) => {
+	try {
+		await main(argv);
+	} catch (err) {
+		console.error(`💥  ERROR: ${err.message}`);
+		process.exit(1);
+	}
 };
 
 module.exports = {

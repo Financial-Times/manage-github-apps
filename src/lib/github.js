@@ -1,43 +1,50 @@
-/**
- * Parses owner and repo from the following URL types:
- *
- *   financial-times-sandbox/manage-github-apps
- *   https://github.com/github-organization/github-repo-name
- *   https://github.com/github-organization/github-repo-name.git
- *   git+https://github.com/github-organization/github-repo-name.git
- *   git@github.com:github-organization/github-repo-name.git
- *
- * @param {string} githubRepo
- */
-const parseGithubRepo = (githubRepo) => {
-	const extractOwnerAndRepoRegExp = /(?:\/|\:)?([\w\-]+)\/([^\.\/]+)(?:\.git)?$/;
-	const [, owner, repo] = extractOwnerAndRepoRegExp.exec(githubRepo);
+const Octokit = require('@octokit/rest');
 
-	return { owner, repo };
-};
+class Github {
 
-const authenticateWithToken = (octokit, token) => {
-	octokit.authenticate({
-		type: 'token',
-		token
-	});
-};
+	constructor () {
+		this.client = new Octokit();
+	}
 
-const getAuthenticatedUser = async (octokit) => {
-	const user = await octokit.users.get();
+	/**
+	 * Parses owner and repo from the following URL types:
+	 *
+	 *   financial-times-sandbox/manage-github-apps
+	 *   https://github.com/github-organization/github-repo-name
+	 *   https://github.com/github-organization/github-repo-name.git
+	 *   git+https://github.com/github-organization/github-repo-name.git
+	 *   git@github.com:github-organization/github-repo-name.git
+	 *
+	 * @param {string} githubRepoString
+	 */
+	extractOwnerAndRepo (githubRepoString) {
+		const extractOwnerAndRepoRegExp = /(?:\/|\:)?([\w\-]+)\/([^\.\/]+)(?:\.git)?$/;
+		const matches = extractOwnerAndRepoRegExp.exec(githubRepoString);
+		if (matches === null) {
+			throw new Error('Could not extract owner and repo from provided string');
+		}
+		const [, owner, repo] = matches;
 
-	return user.data;
-};
+		return { owner, repo };
+	}
 
-const getRepo = async (octokit, { owner, repo }) => {
-	const repoMeta = await octokit.repos.get({ owner, repo });
+	authenticateWithToken (token) {
+		this.client.authenticate({
+			type: 'token',
+			token
+		});
+	}
 
-	return repoMeta.data;
-};
+	async getAuthenticatedUser () {
+		const user = await this.client.users.get();
+		return user.data;
+	}
 
-module.exports = {
-	parseGithubRepo,
-	authenticateWithToken,
-	getAuthenticatedUser,
-	getRepo
-};
+	async getRepo ({ owner, repo }) {
+		const repoMeta = await this.client.repos.get({ owner, repo });
+		return repoMeta.data;
+	}
+
+}
+
+module.exports = Github;
