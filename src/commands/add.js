@@ -39,7 +39,10 @@ const main = async (argv) => {
 	const repoMeta = await github.getRepo({ owner, repo });
 	console.log(`✔️  GitHub repo ${owner}/${repo} exists\n`);
 
-	const addRequests = config.get('installations').map((installation) => {
+	const installations = config.get('installations');
+
+	const addRequests = installations.map((installation) => {
+
 		console.log(
 			`➕  Adding repo to installation ${
 				installation.comment
@@ -54,11 +57,11 @@ const main = async (argv) => {
 		});
 	});
 
-	return Promise.all(addRequests).then(() => {
-		console.log(
-			`\n➡️  Go to https://github.com/${owner}/${repo}/settings/installations to see the installed GitHub apps for this repo.`
-		);
-	});
+	await Promise.all(addRequests);
+
+	console.log(
+		`\n➡️  Go to https://github.com/${owner}/${repo}/settings/installations to see the installed GitHub apps for this repo.`
+	);
 };
 
 const builder = (yargs) => {
