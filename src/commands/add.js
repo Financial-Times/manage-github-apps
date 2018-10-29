@@ -27,9 +27,9 @@ const main = async (argv) => {
 
 	const githubPersonalAccessToken = argv.token;
 
-	console.log('ℹ️  The options you have specified have been parsed as:\n');
-	console.log(`️ℹ️  GitHub organisation: ${owner}`);
-	console.log(`️ℹ️  GitHub repo: ${repo}\n`);
+	console.log('ℹ️  The options you have specified have been parsed as:');
+	console.log(`️ℹ️  - GitHub organisation: ${owner}`);
+	console.log(`️ℹ️  - GitHub repo: ${repo}\n`);
 
 	github.authenticateWithToken(githubPersonalAccessToken);
 
