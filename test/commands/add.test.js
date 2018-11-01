@@ -91,6 +91,19 @@ test('running command handler without `token` will exit process with error', asy
 	expect(mockProcessExit).toBeCalledWith(1);
 });
 
+test('running command handler with mismatching config owner and repo owner will exit process with error', async () => {
+	await addCommand.handler({
+		config: fixtures.paths.validConfig,
+		token: '123abc',
+		repo: 'https://github.com/some-other-org/some-repo'
+	});
+	// TODO: Change to something less brittle
+	expect(logger.error).toBeCalledWith(
+		expect.stringContaining('ERROR: The owner specified by the config (financial-times-sandbox) and the owner of the repo (some-other-org) do not match.')
+	);
+	expect(mockProcessExit).toBeCalledWith(1);
+});
+
 test('running command handler with valid options generates expected log messages', async () => {
 	await addCommand.handler({
 		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
