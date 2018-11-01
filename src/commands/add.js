@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 
+const Config = require('../lib/config');
 const Github = require('../lib/github');
-const Config = require('../lib/config.js');
+const logger = require('../lib/logger');
 
 const configSchema = require('../../schemas/config.schema.json');
 
@@ -15,7 +16,7 @@ const main = async (argv) => {
 
 	await config.load();
 
-	console.log(`ℹ️  Config: Read from ${config.sourceDescription}'\n`);
+	logger.info(`Config: Read from ${config.sourceDescription}\n`);
 
 	const { owner, repo } = github.extractOwnerAndRepo(argv.repo);
 
@@ -27,24 +28,24 @@ const main = async (argv) => {
 
 	const githubPersonalAccessToken = argv.token;
 
-	console.log('ℹ️  The options you have specified have been parsed as:');
-	console.log(`️ℹ️  - GitHub organisation: ${owner}`);
-	console.log(`️ℹ️  - GitHub repo: ${repo}\n`);
+	logger.info('The options you have specified have been parsed as:');
+	logger.info(`- GitHub organisation: ${owner}`);
+	logger.info(`- GitHub repo: ${repo}\n`);
 
 	github.authenticateWithToken(githubPersonalAccessToken);
 
 	const authenticatedUser = await github.getAuthenticatedUser();
-	console.log(`✔️  Authenticated as GitHub user ${authenticatedUser.login}`);
+	logger.success(`Authenticated as GitHub user ${authenticatedUser.login}`);
 
 	const repoMeta = await github.getRepo({ owner, repo });
-	console.log(`✔️  GitHub repo ${owner}/${repo} exists\n`);
+	logger.success(`GitHub repo ${owner}/${repo} exists\n`);
 
 	const installations = config.get('installations');
 
 	const addRequests = installations.map((installation) => {
 
-		console.log(
-			`➕  Adding repo to installation ${
+		logger.custom('➕',
+			`Adding repo to installation ${
 				installation.comment
 			} (https://github.com/organizations/${owner}/settings/installations/${
 				installation.id
@@ -59,8 +60,8 @@ const main = async (argv) => {
 
 	await Promise.all(addRequests);
 
-	console.log(
-		`\n➡️  Go to https://github.com/${owner}/${repo}/settings/installations to see the installed GitHub apps for this repo.`
+	logger.custom('\n➡️',
+		`Go to https://github.com/${owner}/${repo}/settings/installations to see the installed GitHub apps for this repo.`
 	);
 };
 
@@ -94,7 +95,7 @@ const handler = async (argv) => {
 	try {
 		await main(argv);
 	} catch (err) {
-		console.error(`💥  ERROR: ${err.message}`);
+		logger.error(`ERROR: ${err.message}`);
 		process.exit(1);
 	}
 };
