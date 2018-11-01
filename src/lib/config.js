@@ -27,6 +27,13 @@ const formatErrors = (errors) => {
 class Config {
 
 	constructor ({ source, schema }) {
+		if (!source) {
+			throw new Error('Config#constructor: No `source` specified');
+		}
+		if (!schema) {
+			throw new Error('Config#constructor: No `schema` specified');
+		}
+
 		this.source = source;
 		this.schema = schema;
 

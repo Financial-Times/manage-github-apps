@@ -52,6 +52,7 @@ const main = async (argv) => {
 			})`
 		);
 
+		// https://octokit.github.io/rest.js/#api-Apps-addRepoToInstallation
 		return github.client.apps.addRepoToInstallation({
 			installation_id: installation.id,
 			repository_id: repoMeta.id
