@@ -1,0 +1,9 @@
+{
+  "owner": "financial-times-sandbox",
+  "installations": [
+    {
+      "id": 123456,
+      "comment": "Some bot"
+    }
+  ]
+}

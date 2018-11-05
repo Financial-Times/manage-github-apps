@@ -7,9 +7,11 @@
     "mga": "src/index.js"
   },
   "scripts": {
-    "lint": "eslint --fix src/",
+    "test": "npm run lint && npm run unit-test",
+    "lint": "eslint src/",
+    "lint-fix": "eslint --fix src/",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
-    "test": "npm run lint"
+    "unit-test": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,7 @@
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-no-only-tests": "^2.0.1",
     "husky": "^1.1.2",
+    "jest": "^23.6.0",
     "prettier": "^1.14.3"
   },
   "engines": {

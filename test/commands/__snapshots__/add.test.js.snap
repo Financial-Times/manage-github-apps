@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`running command handler with valid options generates expected log messages 1`] = `
+"{
+  \\"info\\": [
+    [
+      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/commands/fixtures/config.json\\\\n\\"
+    ],
+    [
+      \\"The options you have specified have been parsed as:\\"
+    ],
+    [
+      \\"- GitHub organisation: financial-times-sandbox\\"
+    ],
+    [
+      \\"- GitHub repo: Timely-Moving-Coffin\\\\n\\"
+    ]
+  ],
+  \\"message\\": [],
+  \\"success\\": [
+    [
+      \\"Authenticated as GitHub user testuser\\"
+    ],
+    [
+      \\"GitHub repo financial-times-sandbox/Timely-Moving-Coffin exists\\\\n\\"
+    ]
+  ],
+  \\"warning\\": [],
+  \\"error\\": [],
+  \\"custom\\": [
+    [
+      \\"➕\\",
+      \\"Adding repo to installation Some bot (https://github.com/organizations/financial-times-sandbox/settings/installations/123456)\\"
+    ],
+    [
+      \\"\\\\n➡️\\",
+      \\"Go to https://github.com/financial-times-sandbox/Timely-Moving-Coffin/settings/installations to see the installed GitHub apps for this repo.\\"
+    ]
+  ]
+}"
+`;

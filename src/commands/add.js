@@ -1,14 +1,70 @@
 /* eslint-disable no-console */
 
-const Octokit = require('@octokit/rest');
-const fs = require('fs');
-const fetch = require('node-fetch');
-const path = require('path');
-const { URL } = require('url');
-const validator = require('is-my-json-valid/require');
+const Config = require('../lib/config');
+const Github = require('../lib/github');
+const logger = require('../lib/logger');
 
-const githubHelpers = require('../lib/github');
-const validate = validator('../../schemas/config.schema.json');
+const configSchema = require('../../schemas/config.schema.json');
+
+const main = async (argv) => {
+
+	const github = new Github();
+	const config = new Config({
+		source: argv.config,
+		schema: configSchema
+	});
+
+	await config.load();
+
+	logger.info(`Config: Read from ${config.sourceDescription}\n`);
+
+	const { owner, repo } = github.extractOwnerAndRepo(argv.repo);
+
+	const configOwner = config.get('owner');
+	const configOwnerAndRepoOwnermatch = (configOwner === owner);
+	if (!configOwnerAndRepoOwnermatch) {
+		throw new Error(`GitHubOwnerMismatch: The owner specified by the config (${configOwner}) and the owner of the repo (${owner}) do not match.\n   It is not possible to add the repo to the installations specified by the config.`);
+	}
+
+	const githubPersonalAccessToken = argv.token;
+
+	logger.info('The options you have specified have been parsed as:');
+	logger.info(`- GitHub organisation: ${owner}`);
+	logger.info(`- GitHub repo: ${repo}\n`);
+
+	github.authenticateWithToken(githubPersonalAccessToken);
+
+	const authenticatedUser = await github.getAuthenticatedUser();
+	logger.success(`Authenticated as GitHub user ${authenticatedUser.login}`);
+
+	const repoMeta = await github.getRepo({ owner, repo });
+	logger.success(`GitHub repo ${owner}/${repo} exists\n`);
+
+	const installations = config.get('installations');
+
+	const addRequests = installations.map((installation) => {
+
+		logger.custom('➕',
+			`Adding repo to installation ${
+				installation.comment
+			} (https://github.com/organizations/${owner}/settings/installations/${
+				installation.id
+			})`
+		);
+
+		// https://octokit.github.io/rest.js/#api-Apps-addRepoToInstallation
+		return github.client.apps.addRepoToInstallation({
+			installation_id: installation.id,
+			repository_id: repoMeta.id
+		});
+	});
+
+	await Promise.all(addRequests);
+
+	logger.custom('\n➡️',
+		`Go to https://github.com/${owner}/${repo}/settings/installations to see the installed GitHub apps for this repo.`
+	);
+};
 
 const builder = (yargs) => {
 
@@ -18,127 +74,31 @@ const builder = (yargs) => {
 			describe: 'GitHub repository e.g. https://github.com/github-organization/github-repo-name',
 			demandOption: true,
 			type: 'string',
+			// TODO: coerce - check if owner and repo can be extracted
 		})
 		.option('config', {
 			alias: 'c',
 			describe: 'Path to JSON configuration (URL or local filepath)',
 			demandOption: true,
 			type: 'string',
+			// TODO: coerce?
 		})
 		.option('token', {
 			alias: 't',
 			describe: 'GitHub Personal Access Token (must have all repo scopes)',
 			demandOption: true,
 			type: 'string',
+			// TODO: coerce?
 		});
 };
 
 const handler = async (argv) => {
 	try {
-		await commandAdd(argv);
+		await main(argv);
 	} catch (err) {
-		console.error(`💥  ERROR: ${err.message}`);
+		logger.error(`ERROR: ${err.message}`);
 		process.exit(1);
 	}
-};
-
-const configPathLooksLikeUrl = (configPath) => {
-	try {
-		if (new URL(configPath)) {
-			return true;
-		}
-	} catch (err) {}
-
-	return false;
-};
-
-const validateConfig = (config) => {
-
-	if (validate(config)) {
-		return true;
-	}
-
-	const formatField = (fieldName) => {
-		return (fieldName === 'data') ? '' : `'${fieldName.replace('data.', "")}' `;
-	};
-
-	const validationErrors = validate.errors.map((err) => {
-		return `- ${formatField(err.field)}${err.message}`;
-	}).join('\n');
-
-	throw new Error(`Config is invalid:\n\n${validationErrors}`);
-};
-
-const getConfig = async (configPath) => {
-
-	let config;
-
-	if (configPathLooksLikeUrl(configPath)) {
-		config = await fetch(configPath).then((res) => res.json());
-		console.log(`ℹ️  Config: Read from URL '${configPath}'\n`);
-	} else {
-		const localConfigPath = path.resolve(`${process.cwd()}/${configPath}`);
-		if (!fs.existsSync(localConfigPath)) {
-			throw new Error(`Config: Could not find local file '${localConfigPath}'`);
-		}
-		config = require(localConfigPath);
-		console.log(`ℹ️  Config: Read from local file '${localConfigPath}'\n`);
-	}
-
-	validateConfig(config);
-
-	return config;
-};
-
-const commandAdd = async (argv) => {
-
-	const config = await getConfig(argv.config);
-
-	const { owner, repo } = githubHelpers.parseGithubRepo(argv.repo);
-
-	const configOwnerAndRepoOwnermatch = (config.owner === owner);
-	if (!configOwnerAndRepoOwnermatch) {
-		throw new Error(`The owner specified by the config (${config.owner}) and the owner of the repo (${owner}) do not match.\n   It is not possible to add the repo to the installations specified by the config.`);
-	}
-
-	const githubPersonalAccessToken = argv.token;
-
-	console.log('ℹ️  The options you have specified have been parsed as:\n');
-	console.log(`️ℹ️  GitHub organisation: ${owner}`);
-	console.log(`️ℹ️  GitHub repo: ${repo}\n`);
-
-	const octokit = new Octokit({
-		debug: true
-	});
-
-	githubHelpers.authenticateWithToken(octokit, githubPersonalAccessToken);
-
-	const authenticatedUser = await githubHelpers.getAuthenticatedUser(octokit);
-	console.log(`✔️  Authenticated as GitHub user ${authenticatedUser.login}`);
-
-	const repoMeta = await githubHelpers.getRepo(octokit, { owner, repo });
-	console.log(`✔️  GitHub repo ${owner}/${repo} exists\n`);
-
-	const addRequests = config.installations.map((installation) => {
-		console.log(
-			`➕  Adding repo to installation ${
-				installation.comment
-			} (https://github.com/organizations/${owner}/settings/installations/${
-				installation.id
-			})`
-		);
-
-		return octokit.apps.addRepoToInstallation({
-			installation_id: installation.id,
-			repository_id: repoMeta.id
-		});
-	});
-
-	return Promise.all(addRequests).then(() => {
-		console.log(
-			`\n➡️  Go to https://github.com/${owner}/${repo}/settings/installations to see the installed GitHub apps for this repo.`
-		);
-	});
 };
 
 module.exports = {
