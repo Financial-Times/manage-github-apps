@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`running command handler with a valid config generates expected log messages 1`] = `
+"{
+  \\"info\\": [
+    [
+      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/commands/fixtures/valid-config.json\\\\n\\"
+    ]
+  ],
+  \\"message\\": [],
+  \\"success\\": [
+    [
+      \\"Config is valid\\"
+    ]
+  ],
+  \\"warning\\": [],
+  \\"error\\": [],
+  \\"custom\\": []
+}"
+`;
+
+exports[`running command handler with an invalid config generates expected log messages 1`] = `
+"{
+  \\"info\\": [],
+  \\"message\\": [],
+  \\"success\\": [],
+  \\"warning\\": [],
+  \\"error\\": [
+    [
+      \\"Config is invalid\\"
+    ],
+    [
+      {}
+    ]
+  ],
+  \\"custom\\": []
+}"
+`;

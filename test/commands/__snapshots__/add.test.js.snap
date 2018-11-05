@@ -4,7 +4,7 @@ exports[`running command handler with valid options generates expected log messa
 "{
   \\"info\\": [
     [
-      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/commands/fixtures/config.json\\\\n\\"
+      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/commands/fixtures/valid-config.json\\\\n\\"
     ],
     [
       \\"The options you have specified have been parsed as:\\"

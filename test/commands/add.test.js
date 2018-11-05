@@ -29,7 +29,7 @@ const mockConsoleWarn = jest.spyOn(console, 'warn')
 
 const fixtures = {
 	paths: {
-		validConfig: 'test/commands/fixtures/config.json'
+		validConfig: 'test/commands/fixtures/valid-config.json'
 	}
 };
 
