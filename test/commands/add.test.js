@@ -1,3 +1,15 @@
+/**
+ * These are integration tests for the `add` command. They test the output from
+ * the commmand given various valid and invalid arguments.
+ *
+ * Mocks used by these tests:
+ *
+ * - @octokit/rest - So that calls are not made to GitHub's API
+ * - src/lib/logger.js - So we can test output from the `add` command
+ * - process.exit - So the Jest process isn't exited
+ * - console.warn - So we don't get console messages mixed in with Jest output
+ */
+
 // Third-party modules
 const yargs = require('yargs');
 
@@ -7,41 +19,34 @@ const logger = require('../../src/lib/logger');
 
 const addCommand = require('../../src/commands/add');
 
+const mockProcessExit = jest.spyOn(process, 'exit')
+	.mockImplementation((code) => code);
+
+const mockConsoleWarn = jest.spyOn(console, 'warn')
+	.mockImplementation((message) => message);
+
 const fixtures = {
 	paths: {
 		validConfig: 'test/commands/fixtures/config.json'
 	}
 };
 
-const generateLoggerSnapshot = () => {
-	let loggerSnapshot = {};
+const collectLoggerOutput = () => {
+	let loggerOutput = {};
 	for (let method in logger) {
 		if (!logger.hasOwnProperty(method)) {
 			continue;
 		}
 		if (logger[method].mock && logger[method].mock.calls) {
-			loggerSnapshot[method] = logger[method].mock.calls;
+			loggerOutput[method] = logger[method].mock.calls;
 		}
 	}
-	return JSON.stringify(loggerSnapshot);
+
+	return JSON.stringify(loggerOutput, null, 2);
 };
 
-let mockProcessExit;
-let mockConsoleWarn;
-
-beforeEach(() => {
-	mockProcessExit = jest
-		.spyOn(process, 'exit')
-		.mockImplementation((code) => code);
-
-	mockConsoleWarn = jest.spyOn(console, 'warn');
-});
-
 afterEach(() => {
-	// TODO: What kind of clearing needs to happen here? Do we need to reset spies?
 	jest.clearAllMocks();
-	mockProcessExit.mockRestore();
-	mockConsoleWarn.mockRestore();
 });
 
 test('`add` command module exports an object that can be used by yargs', () => {
@@ -53,9 +58,19 @@ test('`add` command module exports an object that can be used by yargs', () => {
 	});
 });
 
-test('yargs can load the `add` command without any warnings', () => {
-	yargs.command(addCommand.command, addCommand.desc, addCommand.builder, addCommand.handler).argv;
-	expect(mockConsoleWarn).toHaveBeenCalledTimes(0);
+test('yargs can load the `add` command without any errors or warnings', () => {
+
+	expect(() => {
+		yargs.command(
+			addCommand.command,
+			addCommand.desc,
+			addCommand.builder,
+			addCommand.handler
+		).argv;
+	}).not.toThrow();
+
+	// yargs uses `console.warn` to raise errors about incorrect types for some arguments to the `command` method
+	expect(mockConsoleWarn).not.toBeCalled();
 });
 
 test('running command handler without `repo` will exit process with error', async () => {
@@ -64,7 +79,7 @@ test('running command handler without `repo` will exit process with error', asyn
 		token: '123abc'
 	});
 	expect(logger.error).toBeCalledWith(
-		'ERROR: Github#extractOwnerAndRepo: Could not extract owner and repo from provided string'
+		expect.stringContaining('ERROR: Github#extractOwnerAndRepo')
 	);
 	expect(mockProcessExit).toBeCalledWith(1);
 });
@@ -75,7 +90,7 @@ test('running command handler without `config` will exit process with error', as
 		token: '123abc'
 	});
 	expect(logger.error).toBeCalledWith(
-		'ERROR: Config#constructor: No `source` specified'
+		expect.stringContaining('ERROR: Config#constructor')
 	);
 	expect(mockProcessExit).toBeCalledWith(1);
 });
@@ -86,7 +101,7 @@ test('running command handler without `token` will exit process with error', asy
 		config: fixtures.paths.validConfig
 	});
 	expect(logger.error).toBeCalledWith(
-		'ERROR: Github#authenticateWithToken: No valid `token` specified'
+		expect.stringContaining('ERROR: Github#authenticateWithToken')
 	);
 	expect(mockProcessExit).toBeCalledWith(1);
 });
@@ -97,9 +112,8 @@ test('running command handler with mismatching config owner and repo owner will 
 		token: '123abc',
 		repo: 'https://github.com/some-other-org/some-repo'
 	});
-	// TODO: Change to something less brittle
 	expect(logger.error).toBeCalledWith(
-		expect.stringContaining('ERROR: The owner specified by the config (financial-times-sandbox) and the owner of the repo (some-other-org) do not match.')
+		expect.stringContaining('GitHubOwnerMismatch')
 	);
 	expect(mockProcessExit).toBeCalledWith(1);
 });
@@ -111,9 +125,7 @@ test('running command handler with valid options generates expected log messages
 		token: '123abc'
 	});
 
-	expect(generateLoggerSnapshot()).toMatchInlineSnapshot(
-		`"{\\"info\\":[[\\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/commands/fixtures/config.json\\\\n\\"],[\\"The options you have specified have been parsed as:\\"],[\\"- GitHub organisation: financial-times-sandbox\\"],[\\"- GitHub repo: Timely-Moving-Coffin\\\\n\\"]],\\"message\\":[],\\"success\\":[[\\"Authenticated as GitHub user testuser\\"],[\\"GitHub repo financial-times-sandbox/Timely-Moving-Coffin exists\\\\n\\"]],\\"warning\\":[],\\"error\\":[],\\"custom\\":[[\\"➕\\",\\"Adding repo to installation Some bot (https://github.com/organizations/financial-times-sandbox/settings/installations/123456)\\"],[\\"\\\\n➡️\\",\\"Go to https://github.com/financial-times-sandbox/Timely-Moving-Coffin/settings/installations to see the installed GitHub apps for this repo.\\"]]}"`
-	);
-	expect(logger.error).toHaveBeenCalledTimes(0);
-	expect(mockProcessExit).toHaveBeenCalledTimes(0);
+	expect(collectLoggerOutput()).toMatchSnapshot();
+	expect(logger.error).not.toBeCalled();
+	expect(mockProcessExit).not.toBeCalled();
 });
