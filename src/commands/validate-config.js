@@ -47,7 +47,7 @@ const handler = async (argv) => {
 
 module.exports = {
 	command: 'validate-config',
-	desc: '...',
+	desc: 'Validate a JSON configuration against the manage-github-apps JSON schema',
 	builder,
 	handler,
 };
