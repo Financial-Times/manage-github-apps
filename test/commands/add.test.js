@@ -19,6 +19,8 @@ const logger = require('../../src/lib/logger');
 
 const addCommand = require('../../src/commands/add');
 
+const collectMockCalls = require('./helpers/collect-mock-calls');
+
 const mockProcessExit = jest.spyOn(process, 'exit')
 	.mockImplementation((code) => code);
 
@@ -29,20 +31,6 @@ const fixtures = {
 	paths: {
 		validConfig: 'test/commands/fixtures/config.json'
 	}
-};
-
-const collectLoggerOutput = () => {
-	let loggerOutput = {};
-	for (let method in logger) {
-		if (!logger.hasOwnProperty(method)) {
-			continue;
-		}
-		if (logger[method].mock && logger[method].mock.calls) {
-			loggerOutput[method] = logger[method].mock.calls;
-		}
-	}
-
-	return JSON.stringify(loggerOutput, null, 2);
 };
 
 afterEach(() => {
@@ -125,7 +113,9 @@ test('running command handler with valid options generates expected log messages
 		token: '123abc'
 	});
 
-	expect(collectLoggerOutput()).toMatchSnapshot();
+	const loggerOutput = collectMockCalls(logger);
+
+	expect(loggerOutput).toMatchSnapshot();
 	expect(logger.error).not.toBeCalled();
 	expect(mockProcessExit).not.toBeCalled();
 });
