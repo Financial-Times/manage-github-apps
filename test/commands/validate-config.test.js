@@ -84,7 +84,9 @@ test('running command handler with an invalid config generates expected log mess
 		config: fixtures.paths.invalidConfig
 	});
 
-	expect(collectMockCalls(logger)).toMatchSnapshot();
+	const loggerCalls = collectMockCalls(logger);
+
+	expect(loggerCalls).toMatchSnapshot();
 	expect(logger.error).toBeCalled();
 	expect(mockProcessExit).not.toBeCalled();
 });
