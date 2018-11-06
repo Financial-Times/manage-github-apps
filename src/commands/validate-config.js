@@ -19,7 +19,7 @@ const main = async (argv) => {
 		logger.success('Config is valid');
 	} catch (err) {
 		logger.error('Config is invalid');
-		logger.error(err);
+		logger.error(err.message);
 	}
 
 };

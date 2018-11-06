@@ -14,10 +14,14 @@ const looksLikeUrl = (configPath) => {
 	return false;
 };
 
+const formatField = (fieldName) => {
+	return (fieldName === 'data') ? '' : `'${fieldName.replace('data.', "")}' `;
+};
+
 const formatErrors = (errors) => {
-	const formatField = (fieldName) => {
-		return (fieldName === 'data') ? '' : `'${fieldName.replace('data.', "")}' `;
-	};
+	if (!errors || !errors.length) {
+		return '';
+	}
 
 	return errors.map((err) => {
 		return `- ${formatField(err.field)}${err.message}`;
@@ -60,18 +64,21 @@ class Config {
 		}
 
 		const validationResult = this.validateAgainstSchema(config);
-		if (validationResult) {
+		if (validationResult === true) {
 			this.configObject = config;
 			this.sourceDescription = sourceDescription;
 			this.loaded = true;
 		} else {
-			throw new Error(`The config is invalid:\n\n${formatErrors(validationResult.errors)}`);
+			throw new Error(`The config is invalid:\n\n${formatErrors(validationResult)}`);
 		}
 	}
 
 	validateAgainstSchema (config) {
 		const validate = validator(this.schema);
-		return validate(config);
+		if (validate(config)) {
+			return true;
+		}
+		return validate.errors;
 	}
 
 	get (property) {
