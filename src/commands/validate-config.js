@@ -31,8 +31,7 @@ const builder = (yargs) => {
 			alias: 'c',
 			describe: 'Path to JSON configuration (URL or local filepath)',
 			demandOption: true,
-			type: 'string',
-			// TODO: coerce?
+			type: 'string'
 		});
 };
 

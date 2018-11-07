@@ -6,9 +6,10 @@ const logger = require('../lib/logger');
 
 const configSchema = require('../../schemas/config.schema.json');
 
+const github = new Github();
+
 const main = async (argv) => {
 
-	const github = new Github();
 	const config = new Config({
 		source: argv.config,
 		schema: configSchema
@@ -74,21 +75,26 @@ const builder = (yargs) => {
 			describe: 'GitHub repository e.g. https://github.com/github-organization/github-repo-name',
 			demandOption: true,
 			type: 'string',
-			// TODO: coerce - check if owner and repo can be extracted
+			coerce: (value) => {
+				try {
+					github.extractOwnerAndRepo(value);
+				} catch (err) {
+					throw new Error('Argument repo must contain the repo owner and repo name');
+				}
+				return value;
+			}
 		})
 		.option('config', {
 			alias: 'c',
 			describe: 'Path to JSON configuration (URL or local filepath)',
 			demandOption: true,
 			type: 'string',
-			// TODO: coerce?
 		})
 		.option('token', {
 			alias: 't',
 			describe: 'GitHub Personal Access Token (must have all repo scopes)',
 			demandOption: true,
 			type: 'string',
-			// TODO: coerce?
 		});
 };
 
