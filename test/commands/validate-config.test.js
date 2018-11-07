@@ -20,18 +20,13 @@ const validateConfigCommand = require('../../src/commands/validate-config');
 
 const collectMockCalls = require('./helpers/collect-mock-calls');
 
+const fixtures = require('../fixtures');
+
 const mockProcessExit = jest.spyOn(process, 'exit')
 	.mockImplementation((code) => code);
 
 const mockConsoleWarn = jest.spyOn(console, 'warn')
 	.mockImplementation((message) => message);
-
-const fixtures = {
-	paths: {
-		validConfig: 'test/commands/fixtures/valid-config.json',
-		invalidConfig: 'test/commands/fixtures/invalid-config.json'
-	}
-};
 
 afterEach(() => {
 	jest.clearAllMocks();
@@ -71,7 +66,7 @@ test('running command handler without `config` will exit process with error', as
 
 test('running command handler with a valid config generates expected log messages', async () => {
 	await validateConfigCommand.handler({
-		config: fixtures.paths.validConfig
+		config: fixtures.config.valid.filepath
 	});
 
 	expect(collectMockCalls(logger)).toMatchSnapshot();
@@ -81,7 +76,7 @@ test('running command handler with a valid config generates expected log message
 
 test('running command handler with an invalid config generates expected log messages', async () => {
 	await validateConfigCommand.handler({
-		config: fixtures.paths.invalidConfig
+		config: fixtures.config.invalid.filepath
 	});
 
 	const loggerCalls = collectMockCalls(logger);

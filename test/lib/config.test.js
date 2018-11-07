@@ -8,28 +8,7 @@
 
 const Config = require('../../src/lib/config');
 
-const path = require('path');
-
-// TODO: Move this out into fixtures/index.js with resolved paths
-const fixtures = {
-	config: {
-		filepathValid: path.resolve('test/commands/fixtures/valid-config.json'),
-		filepathInvalid: path.resolve('test/commands/fixtures/invalid-config.json'),
-		urlHostname: 'https://raw.githubusercontent.com',
-		urlPathValid: '/some-org/github-apps-config/master/valid.json',
-		urlValid: null,
-		urlPathInvalid: '/some-org/github-apps-config/master/invalid.json',
-		urlInvalid: null,
-	},
-	schema: {
-		filepathValid: path.resolve('test/commands/fixtures/schemas/valid.json'),
-		// filepathInvalid: '../commands/fixtures/schemas/invalid.json',
-	}
-};
-
-// TODO: Do this better
-fixtures.config.urlValid = `${fixtures.config.urlHostname}${fixtures.config.urlPathValid}`;
-fixtures.config.urlInvalid = `${fixtures.config.urlHostname}${fixtures.config.urlPathInvalid}`;
+const fixtures = require('../fixtures');
 
 const nock = require('nock');
 
@@ -45,7 +24,7 @@ afterEach(() => {
 test('new instance without `source` option throws an error', () => {
 	expect(() => {
 		new Config({
-			schema: require(fixtures.schema.filepathValid)
+			schema: require(fixtures.schema.valid.filepath)
 		});
 	}).toThrowError('Config#constructor: No `source` specified');
 });
@@ -53,7 +32,7 @@ test('new instance without `source` option throws an error', () => {
 test('new instance without `schema` option throws an error', () => {
 	expect(() => {
 		new Config({
-			source: fixtures.config.urlValid
+			source: fixtures.config.valid.url.get()
 		});
 	}).toThrowError('Config#constructor: No `schema` specified');
 });
@@ -61,8 +40,8 @@ test('new instance without `schema` option throws an error', () => {
 test('new instance with valid options won\'t throw an error', () => {
 	expect(() => {
 
-		const source = fixtures.config.urlValid;
-		const schema = require(fixtures.schema.filepathValid);
+		const source = fixtures.config.valid.url.get();
+		const schema = require(fixtures.schema.valid.filepath);
 
 		const config = new Config({ source, schema });
 
@@ -74,8 +53,8 @@ test('new instance with valid options won\'t throw an error', () => {
 
 test('calling `isLoaded` on instance before calling `load` will return false', () => {
 
-	const source = fixtures.config.urlValid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.valid.url.get();
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -84,8 +63,27 @@ test('calling `isLoaded` on instance before calling `load` will return false', (
 
 test('calling `load` on instance where `source` is URL that doesn\'t exist will throw an error', async () => {
 
-	const source = fixtures.config.urlNonExistent;
-	const schema = require(fixtures.schema.filepathValid);
+	nockScope().get(fixtures.config.nonExistent.url.path)
+		.reply(404, '404 Not Found');
+
+	const source = fixtures.config.nonExistent.url.get();
+	const schema = require(fixtures.schema.valid.filepath);
+
+	const config = new Config({ source, schema });
+
+	await expect(config.load())
+		.rejects.toThrowError('Config#load: Could not load config from URL');
+
+	expect(config.isLoaded()).toEqual(false);
+});
+
+test('calling `load` on instance where `source` is URL that doesn\'t return valid JSON will throw an error', async () => {
+
+	nockScope().get(fixtures.config.invalidJson.url.path)
+		.replyWithFile(200, fixtures.config.invalidJson.filepath);
+
+	const source = fixtures.config.invalidJson.url.get();
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -97,11 +95,11 @@ test('calling `load` on instance where `source` is URL that doesn\'t exist will 
 
 test('calling `load` on instance where `source` is URL for valid config will succeed', async () => {
 
-	nockScope().get(fixtures.config.urlPathValid)
-		.reply(200, require(fixtures.config.filepathValid));
+	nockScope().get(fixtures.config.valid.url.path)
+		.replyWithFile(200, fixtures.config.valid.filepath);
 
-	const source = fixtures.config.urlValid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.valid.url.get();
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -112,11 +110,11 @@ test('calling `load` on instance where `source` is URL for valid config will suc
 
 test('calling `load` on instance where `source` is URL for invalid config will throw an error', async () => {
 
-	nockScope().get(fixtures.config.urlPathInvalid)
-		.reply(200, require(fixtures.config.filepathInvalid));
+	nockScope().get(fixtures.config.invalid.url.path)
+		.replyWithFile(200, fixtures.config.invalid.filepath);
 
-	const source = fixtures.config.urlInvalid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.invalid.url.get();
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -128,8 +126,8 @@ test('calling `load` on instance where `source` is URL for invalid config will t
 
 test('calling `load` on instance where `source` is filepath that doesn\'t exist will throw an error', async () => {
 
-	const source = fixtures.config.filepathNonExistent;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.nonExistent.filepath;
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -141,8 +139,8 @@ test('calling `load` on instance where `source` is filepath that doesn\'t exist 
 
 test('calling `load` on instance where `source` is filepath for valid config will succeed', async () => {
 
-	const source = fixtures.config.filepathValid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.valid.filepath;
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -153,8 +151,8 @@ test('calling `load` on instance where `source` is filepath for valid config wil
 
 test('calling `load` on instance where `source` is filepath for invalid config will throw an error', async () => {
 
-	const source = fixtures.config.filepathInvalid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.invalid.filepath;
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -166,8 +164,8 @@ test('calling `load` on instance where `source` is filepath for invalid config w
 
 test('calling `get` on instance with config not loaded throws an error', () => {
 
-	const source = fixtures.config.filepathValid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.valid.filepath;
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -178,8 +176,8 @@ test('calling `get` on instance with config not loaded throws an error', () => {
 
 test('calling `get` on instance with config loaded where property doesn\'t exist throws an error', async () => {
 
-	const source = fixtures.config.filepathValid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.valid.filepath;
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 
@@ -192,10 +190,10 @@ test('calling `get` on instance with config loaded where property doesn\'t exist
 
 test('calling `get` on instance with config loaded returns expected values', async () => {
 
-	const expectedConfig = require(fixtures.config.filepathValid);
+	const expectedConfig = require(fixtures.config.valid.filepath);
 
-	const source = fixtures.config.filepathValid;
-	const schema = require(fixtures.schema.filepathValid);
+	const source = fixtures.config.valid.filepath;
+	const schema = require(fixtures.schema.valid.filepath);
 
 	const config = new Config({ source, schema });
 

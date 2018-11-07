@@ -21,17 +21,13 @@ const addCommand = require('../../src/commands/add');
 
 const collectMockCalls = require('./helpers/collect-mock-calls');
 
+const fixtures = require('../fixtures');
+
 const mockProcessExit = jest.spyOn(process, 'exit')
 	.mockImplementation((code) => code);
 
 const mockConsoleWarn = jest.spyOn(console, 'warn')
 	.mockImplementation((message) => message);
-
-const fixtures = {
-	paths: {
-		validConfig: 'test/commands/fixtures/valid-config.json'
-	}
-};
 
 afterEach(() => {
 	jest.clearAllMocks();
@@ -63,7 +59,7 @@ test('yargs can load the `add` command without any errors or warnings', () => {
 
 test('running command handler without `repo` will exit process with error', async () => {
 	await addCommand.handler({
-		config: fixtures.paths.validConfig,
+		config: fixtures.config.valid.filepath,
 		token: '123abc'
 	});
 	expect(logger.error).toBeCalledWith(
@@ -86,7 +82,7 @@ test('running command handler without `config` will exit process with error', as
 test('running command handler without `token` will exit process with error', async () => {
 	await addCommand.handler({
 		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
-		config: fixtures.paths.validConfig
+		config: fixtures.config.valid.filepath
 	});
 	expect(logger.error).toBeCalledWith(
 		expect.stringContaining('ERROR: Github#authenticateWithToken')
@@ -96,7 +92,7 @@ test('running command handler without `token` will exit process with error', asy
 
 test('running command handler with mismatching config owner and repo owner will exit process with error', async () => {
 	await addCommand.handler({
-		config: fixtures.paths.validConfig,
+		config: fixtures.config.valid.filepath,
 		token: '123abc',
 		repo: 'https://github.com/some-other-org/some-repo'
 	});
@@ -109,7 +105,7 @@ test('running command handler with mismatching config owner and repo owner will 
 test('running command handler with valid options generates expected log messages', async () => {
 	await addCommand.handler({
 		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
-		config: fixtures.paths.validConfig,
+		config: fixtures.config.valid.filepath,
 		token: '123abc'
 	});
 

@@ -4,7 +4,7 @@ exports[`running command handler with a valid config generates expected log mess
 "{
   \\"info\\": [
     [
-      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/commands/fixtures/valid-config.json\\\\n\\"
+      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/fixtures/config/valid.json\\\\n\\"
     ]
   ],
   \\"message\\": [],
