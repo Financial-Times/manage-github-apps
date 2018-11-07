@@ -9,7 +9,7 @@ class Github {
 	/**
 	 * Parses owner and repo from the following URL types:
 	 *
-	 *   financial-times-sandbox/manage-github-apps
+	 *   github-organization/manage-github-apps
 	 *   https://github.com/github-organization/github-repo-name
 	 *   https://github.com/github-organization/github-repo-name.git
 	 *   git+https://github.com/github-organization/github-repo-name.git
