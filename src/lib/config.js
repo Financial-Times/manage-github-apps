@@ -28,13 +28,23 @@ class Config {
 		let sourceDescription;
 
 		if (looksLikeUrl(this.source)) {
-			config = await fetch(this.source).then((res) => res.json());
-			sourceDescription = `URL: ${this.source}`;
+			const errorMessage = (message) => `Config#load: Could not load config from URL: ${this.source} - ${message}`;
+			const response = await fetch(this.source);
+			if (response.ok) {
+				try {
+					config = await response.json();
+					sourceDescription = `URL: ${this.source}`;
+				} catch (err) {
+					throw new Error(errorMessage(err.message));
+				}
+			} else {
+				throw new Error(errorMessage(await response.text()));
+			}
 		} else {
 			const localConfigPath = path.resolve(this.source);
 			if (!fs.existsSync(localConfigPath)) {
 				throw new Error(
-					`Config#load: Could not find local file '${localConfigPath}'`
+					`Config#load: Could not find local file: ${localConfigPath}`
 				);
 			}
 			config = require(localConfigPath);

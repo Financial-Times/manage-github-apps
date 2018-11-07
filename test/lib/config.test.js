@@ -82,6 +82,19 @@ test('calling `isLoaded` on instance before calling `load` will return false', (
 	expect(config.isLoaded()).toEqual(false);
 });
 
+test('calling `load` on instance where `source` is URL that doesn\'t exist will throw an error', async () => {
+
+	const source = fixtures.config.urlNonExistent;
+	const schema = require(fixtures.schema.filepathValid);
+
+	const config = new Config({ source, schema });
+
+	await expect(config.load())
+		.rejects.toThrowError('Config#load: Could not load config from URL');
+
+	expect(config.isLoaded()).toEqual(false);
+});
+
 test('calling `load` on instance where `source` is URL for valid config will succeed', async () => {
 
 	nockScope().get(fixtures.config.urlPathValid)
@@ -109,6 +122,19 @@ test('calling `load` on instance where `source` is URL for invalid config will t
 
 	await expect(config.load())
 		.rejects.toThrowError('Config#load: The config is invalid');
+
+	expect(config.isLoaded()).toEqual(false);
+});
+
+test('calling `load` on instance where `source` is filepath that doesn\'t exist will throw an error', async () => {
+
+	const source = fixtures.config.filepathNonExistent;
+	const schema = require(fixtures.schema.filepathValid);
+
+	const config = new Config({ source, schema });
+
+	await expect(config.load())
+		.rejects.toThrowError('Config#load: Could not find local file');
 
 	expect(config.isLoaded()).toEqual(false);
 });
