@@ -12,97 +12,34 @@
 const Github = require('../../src/lib/github');
 
 const expectedOwner = 'github-organization';
-const expectedRepo = 'manage-github-apps';
-const expectedFullRepoName = `${expectedOwner}/${expectedRepo}`;
+const expectedRepo = 'github-repo-name';
 
-test('calling `extractOwnerAndRepo` with `' + expectedFullRepoName + '` returns `owner` and `repo`', () => {
+const supportedRepoStrings = Github.SUPPORTED_REPO_STRING_PATTERNS;
 
-	const githubRepoString = expectedFullRepoName;
+const unsupportedRepoStrings = [
+	`https://github.com/${expectedOwner}`,
+	`this is junk subdomain.github.com/${expectedOwner}/${expectedRepo}`,
+	`this is absolute/rubbish that we will not support`,
+];
 
-	const github = new Github();
-	const { owner, repo } = github.extractOwnerAndRepo(githubRepoString);
+supportedRepoStrings.forEach((githubRepoString) => {
+	test('calling `extractOwnerAndRepo` with `' + githubRepoString + '` returns `owner` and `repo`', () => {
 
-	expect(owner).toEqual(expectedOwner);
-	expect(repo).toEqual(expectedRepo);
+		const github = new Github();
+		const { owner, repo } = github.extractOwnerAndRepo(githubRepoString);
+
+		expect(owner).toEqual(expectedOwner);
+		expect(repo).toEqual(expectedRepo);
+	});
 });
 
-test('calling `extractOwnerAndRepo` with `https://github.com/' + expectedFullRepoName + '` returns `owner` and `repo`', () => {
+unsupportedRepoStrings.forEach((githubRepoString) => {
+	test('calling `extractOwnerAndRepo` with `' + githubRepoString + '` will throw an error', () => {
 
-	const githubRepoString = `https://github.com/${expectedFullRepoName}`;
+		const github = new Github();
 
-	const github = new Github();
-	const { owner, repo } = github.extractOwnerAndRepo(githubRepoString);
-
-	expect(owner).toEqual(expectedOwner);
-	expect(repo).toEqual(expectedRepo);
+		expect(() => {
+			github.extractOwnerAndRepo(githubRepoString);
+		}).toThrowError('Github#extractOwnerAndRepo');
+	});
 });
-
-test('calling `extractOwnerAndRepo` with `https://github.com/' + expectedFullRepoName + '.git` returns `owner` and `repo`', () => {
-
-	const githubRepoString = `https://github.com/${expectedFullRepoName}.git`;
-
-	const github = new Github();
-	const { owner, repo } = github.extractOwnerAndRepo(githubRepoString);
-
-	expect(owner).toEqual(expectedOwner);
-	expect(repo).toEqual(expectedRepo);
-});
-
-test('calling `extractOwnerAndRepo` with `git+https://github.com/' + expectedFullRepoName + '.git` returns `owner` and `repo`', () => {
-
-	const githubRepoString = `git+https://github.com/${expectedFullRepoName}.git`;
-
-	const github = new Github();
-	const { owner, repo } = github.extractOwnerAndRepo(githubRepoString);
-
-	expect(owner).toEqual(expectedOwner);
-	expect(repo).toEqual(expectedRepo);
-});
-
-test('calling `extractOwnerAndRepo` with `git@github.com:' + expectedFullRepoName + '.git` returns `owner` and `repo`', () => {
-
-	const githubRepoString = `git@github.com:${expectedFullRepoName}.git`;
-
-	const github = new Github();
-	const { owner, repo } = github.extractOwnerAndRepo(githubRepoString);
-
-	expect(owner).toEqual(expectedOwner);
-	expect(repo).toEqual(expectedRepo);
-});
-
-test('calling `extractOwnerAndRepo` with `https://github.com/' + expectedFullRepoName + '/blob/master/file.js` will throw an error', () => {
-
-	const githubRepoString = `https://github.com/${expectedFullRepoName}/blob/master/file.js`;
-
-	const github = new Github();
-
-	expect(() => {
-		github.extractOwnerAndRepo(githubRepoString);
-	}).toThrowError('Github#extractOwnerAndRepo');
-});
-
-// TODO: This test will fail until regex in `extractOwnerAndRepo` is fixed
-test('calling `extractOwnerAndRepo` with `https://github.com/' + expectedFullRepoName + '/blob/master` will throw an error', () => {
-
-	const githubRepoString = `https://github.com/${expectedFullRepoName}/blob/master`;
-
-	const github = new Github();
-
-	expect(() => {
-		github.extractOwnerAndRepo(githubRepoString);
-	}).toThrowError('Github#extractOwnerAndRepo');
-});
-
-// TODO: This test will fail until regex in `extractOwnerAndRepo` is fixed
-test('calling `extractOwnerAndRepo` with `https://github.com/' + expectedOwner + '` will throw an error', () => {
-
-	const githubRepoString = `https://github.com/${expectedOwner}`;
-
-	const github = new Github();
-
-	expect(() => {
-		github.extractOwnerAndRepo(githubRepoString);
-	}).toThrowError('Github#extractOwnerAndRepo');
-});
-
-// TODO: Add more tests when fixing the regex in `extractOwnerAndRepo`

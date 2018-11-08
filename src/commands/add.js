@@ -76,11 +76,7 @@ const builder = (yargs) => {
 			demandOption: true,
 			type: 'string',
 			coerce: (value) => {
-				try {
-					github.extractOwnerAndRepo(value);
-				} catch (err) {
-					throw new Error('Argument repo must contain the repo owner and repo name');
-				}
+				github.extractOwnerAndRepo(value);
 				return value;
 			}
 		})
