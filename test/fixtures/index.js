@@ -2,7 +2,7 @@ const path = require('path');
 
 const FIXTURES_PATH = 'test/fixtures';
 const FIXTURES_CONFIG_PATH = `${FIXTURES_PATH}/config`;
-const FIXTURES_SCHEMAS_PATH = `${FIXTURES_PATH}/schemas`;
+const FIXTURES_SCHEMAS_PATH = `schemas`;
 
 const fixtures = {
 
@@ -47,7 +47,7 @@ const fixtures = {
 	schema: {
 
 		valid: {
-			filepath: path.resolve(`${FIXTURES_SCHEMAS_PATH}/valid.json`),
+			filepath: path.resolve(`${FIXTURES_SCHEMAS_PATH}/config.schema.json`),
 		},
 
 	}
