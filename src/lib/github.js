@@ -7,23 +7,18 @@ class Github {
 	}
 
 	/**
-	 * Parses owner and repo from the following URL types:
-	 *
-	 *   financial-times-sandbox/manage-github-apps
-	 *   https://github.com/github-organization/github-repo-name
-	 *   https://github.com/github-organization/github-repo-name.git
-	 *   git+https://github.com/github-organization/github-repo-name.git
-	 *   git@github.com:github-organization/github-repo-name.git
+	 * Parses owner and repo from a supported list of string patterns defined by
+	 * `Github.SUPPORTED_REPO_STRING_PATTERNS`.
 	 *
 	 * @param {string} githubRepoString
-	 * @returns {object} - owner and repo
+	 * @returns {object} - Properties: owner, repo
 	 */
 	extractOwnerAndRepo (githubRepoString) {
-		// TODO: Fix regex so it doesn't match https://github.com/github-organization
-		const extractOwnerAndRepoRegExp = /(?:\/|\:)?([\w\-]+)\/([^\.\/]+)(?:\.git)?$/;
+		const extractOwnerAndRepoRegExp = /^(?:\S*github\.com(?:\/|:))?([\w-]+)\/([\w-]+)/;
 		const matches = extractOwnerAndRepoRegExp.exec(githubRepoString);
+
 		if (matches === null) {
-			throw new Error('Github#extractOwnerAndRepo: Could not extract owner and repo from provided string');
+			throw new Error(`Github#extractOwnerAndRepo: Could not extract owner and repo from provided string. The string must match one of the following patterns:\n\n- ${Github.SUPPORTED_REPO_STRING_PATTERNS.join('\n- ')}`);
 		}
 		const [, owner, repo] = matches;
 
@@ -70,5 +65,21 @@ class Github {
 	}
 
 }
+
+/**
+ * Array of repo string patterns supported by `Github#extractOwnerAndRepo`.
+ *
+ * @type {Array<string>}
+ */
+Github.SUPPORTED_REPO_STRING_PATTERNS = [
+	'github-organization/github-repo-name',
+	'github.com/github-organization/github-repo-name',
+	'subdomain.github.com/github-organization/github-repo-name',
+	'https://github.com/github-organization/github-repo-name',
+	'https://github.com/github-organization/github-repo-name/blob/master',
+	'https://github.com/github-organization/github-repo-name.git',
+	'git+https://github.com/github-organization/github-repo-name.git',
+	'git@github.com:github-organization/github-repo-name.git',
+];
 
 module.exports = Github;

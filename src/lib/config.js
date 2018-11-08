@@ -1,32 +1,13 @@
 const fs = require('fs');
 const fetch = require('node-fetch');
 const path = require('path');
-const { URL } = require('url');
-const validator = require('is-my-json-valid');
 
-const looksLikeUrl = (configPath) => {
-	try {
-		if (new URL(configPath)) {
-			return true;
-		}
-	} catch (err) {}
-
-	return false;
-};
-
-const formatErrors = (errors) => {
-	const formatField = (fieldName) => {
-		return (fieldName === 'data') ? '' : `'${fieldName.replace('data.', "")}' `;
-	};
-
-	return errors.map((err) => {
-		return `- ${formatField(err.field)}${err.message}`;
-	}).join('\n');
-};
+const looksLikeUrl = require('./helpers/looks-like-url');
+const validation = require('./helpers/validation');
 
 class Config {
 
-	constructor ({ source, schema }) {
+	constructor({ source, schema }) {
 		if (!source) {
 			throw new Error('Config#constructor: No `source` specified');
 		}
@@ -42,49 +23,66 @@ class Config {
 		this.loaded = false;
 	}
 
-	async load () {
-
+	async load() {
 		let config;
 		let sourceDescription;
 
 		if (looksLikeUrl(this.source)) {
-			config = await fetch(this.source).then((res) => res.json());
-			sourceDescription = `URL: ${this.source}`;
+			const errorMessage = (message) => `Config#load: Could not load config from URL: ${this.source} - ${message}`;
+			const response = await fetch(this.source);
+			if (response.ok) {
+				try {
+					config = await response.json();
+					sourceDescription = `URL: ${this.source}`;
+				} catch (err) {
+					throw new Error(errorMessage(err.message));
+				}
+			} else {
+				throw new Error(errorMessage(await response.text()));
+			}
 		} else {
-			const localConfigPath = path.resolve(`${process.cwd()}/${this.source}`);
+			const localConfigPath = path.resolve(this.source);
 			if (!fs.existsSync(localConfigPath)) {
-				throw new Error(`Config: Could not find local file '${localConfigPath}'`);
+				throw new Error(
+					`Config#load: Could not find local file: ${localConfigPath}`
+				);
 			}
 			config = require(localConfigPath);
 			sourceDescription = `local file: ${localConfigPath}`;
 		}
 
-		const validationResult = this.validateAgainstSchema(config);
-		if (validationResult) {
-			this.configObject = config;
-			this.sourceDescription = sourceDescription;
-			this.loaded = true;
-		} else {
-			throw new Error(`The config is invalid:\n\n${formatErrors(validationResult.errors)}`);
+		const validationResult = validation.dataAgainstSchema(this.schema, config);
+		if (validationResult !== true) {
+			throw new Error(
+				`Config#load: The config is invalid:\n\n${validation.formatErrors(
+					validationResult
+				)}`
+			);
 		}
+
+		this.configObject = config;
+		this.sourceDescription = sourceDescription;
+		this.loaded = true;
+
+		return true;
 	}
 
-	validateAgainstSchema (config) {
-		const validate = validator(this.schema);
-		return validate(config);
+	isLoaded() {
+		return this.loaded;
 	}
 
-	get (property) {
+	get(property) {
 		if (!this.loaded) {
-			throw new Error(`Cannot get property '${property}' as config has not been loaded, Config#load must be called first`);
+			throw new Error(
+				`Config#get: Cannot get property '${property}' as config has not been loaded, Config#load must be called first`
+			);
 		}
-		if (!property in this.configObject) {
-			throw new Error(`The config property '${property}' does not exist`);
+		if (typeof this.configObject[property] === 'undefined') {
+			throw new Error(`Config#get: The config property '${property}' does not exist`);
 		}
 
 		return this.configObject[property];
 	}
-
 }
 
 module.exports = Config;

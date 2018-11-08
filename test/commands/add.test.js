@@ -19,31 +19,15 @@ const logger = require('../../src/lib/logger');
 
 const addCommand = require('../../src/commands/add');
 
+const collectMockCalls = require('./helpers/collect-mock-calls');
+
+const fixtures = require('../fixtures');
+
 const mockProcessExit = jest.spyOn(process, 'exit')
 	.mockImplementation((code) => code);
 
 const mockConsoleWarn = jest.spyOn(console, 'warn')
 	.mockImplementation((message) => message);
-
-const fixtures = {
-	paths: {
-		validConfig: 'test/commands/fixtures/config.json'
-	}
-};
-
-const collectLoggerOutput = () => {
-	let loggerOutput = {};
-	for (let method in logger) {
-		if (!logger.hasOwnProperty(method)) {
-			continue;
-		}
-		if (logger[method].mock && logger[method].mock.calls) {
-			loggerOutput[method] = logger[method].mock.calls;
-		}
-	}
-
-	return JSON.stringify(loggerOutput, null, 2);
-};
 
 afterEach(() => {
 	jest.clearAllMocks();
@@ -75,7 +59,7 @@ test('yargs can load the `add` command without any errors or warnings', () => {
 
 test('running command handler without `repo` will exit process with error', async () => {
 	await addCommand.handler({
-		config: fixtures.paths.validConfig,
+		config: fixtures.config.valid.filepath,
 		token: '123abc'
 	});
 	expect(logger.error).toBeCalledWith(
@@ -98,7 +82,7 @@ test('running command handler without `config` will exit process with error', as
 test('running command handler without `token` will exit process with error', async () => {
 	await addCommand.handler({
 		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
-		config: fixtures.paths.validConfig
+		config: fixtures.config.valid.filepath
 	});
 	expect(logger.error).toBeCalledWith(
 		expect.stringContaining('ERROR: Github#authenticateWithToken')
@@ -108,7 +92,7 @@ test('running command handler without `token` will exit process with error', asy
 
 test('running command handler with mismatching config owner and repo owner will exit process with error', async () => {
 	await addCommand.handler({
-		config: fixtures.paths.validConfig,
+		config: fixtures.config.valid.filepath,
 		token: '123abc',
 		repo: 'https://github.com/some-other-org/some-repo'
 	});
@@ -121,11 +105,13 @@ test('running command handler with mismatching config owner and repo owner will 
 test('running command handler with valid options generates expected log messages', async () => {
 	await addCommand.handler({
 		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
-		config: fixtures.paths.validConfig,
+		config: fixtures.config.valid.filepath,
 		token: '123abc'
 	});
 
-	expect(collectLoggerOutput()).toMatchSnapshot();
+	const loggerOutput = collectMockCalls(logger);
+
+	expect(loggerOutput).toMatchSnapshot();
 	expect(logger.error).not.toBeCalled();
 	expect(mockProcessExit).not.toBeCalled();
 });
