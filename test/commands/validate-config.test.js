@@ -83,5 +83,5 @@ test('running command handler with an invalid config generates expected log mess
 
 	expect(loggerCalls).toMatchSnapshot();
 	expect(logger.error).toBeCalled();
-	expect(mockProcessExit).not.toBeCalled();
+	expect(mockProcessExit).toBeCalledWith(1);
 });

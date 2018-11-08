@@ -12,15 +12,10 @@ const main = async (argv) => {
 		schema: configSchema
 	});
 
-	try {
-		await config.load();
+	await config.load();
 
-		logger.info(`Config: Read from ${config.sourceDescription}\n`);
-		logger.success('Config is valid');
-	} catch (err) {
-		logger.error('Config is invalid');
-		logger.error(err.message);
-	}
+	logger.info(`Config: Read from ${config.sourceDescription}\n`);
+	logger.success('Config is valid');
 
 };
 
