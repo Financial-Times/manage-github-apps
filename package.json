@@ -15,14 +15,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/financial-times-sandbox/manage-github-apps.git"
+    "url": "git+https://github.com/Financial-Times/manage-github-apps.git"
   },
   "author": "Simon Plenderleith <simon@simonplend.co.uk>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/financial-times-sandbox/manage-github-apps/issues"
+    "url": "https://github.com/Financial-Times/manage-github-apps/issues"
   },
-  "homepage": "https://github.com/financial-times-sandbox/manage-github-apps#readme",
+  "homepage": "https://github.com/Financial-Times/manage-github-apps#readme",
   "dependencies": {
     "@octokit/rest": "^15.13.1",
     "is-my-json-valid": "^2.19.0",

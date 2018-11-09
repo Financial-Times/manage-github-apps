@@ -70,7 +70,7 @@ test('running command handler without `repo` will exit process with error', asyn
 
 test('running command handler without `config` will exit process with error', async () => {
 	await addCommand.handler({
-		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
+		repo: 'https://github.com/some-github-organization/test-repo',
 		token: '123abc'
 	});
 	expect(logger.error).toBeCalledWith(
@@ -81,7 +81,7 @@ test('running command handler without `config` will exit process with error', as
 
 test('running command handler without `token` will exit process with error', async () => {
 	await addCommand.handler({
-		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
+		repo: 'https://github.com/some-github-organization/test-repo',
 		config: fixtures.config.valid.filepath
 	});
 	expect(logger.error).toBeCalledWith(
@@ -104,7 +104,7 @@ test('running command handler with mismatching config owner and repo owner will 
 
 test('running command handler with valid options generates expected log messages', async () => {
 	await addCommand.handler({
-		repo: 'https://github.com/financial-times-sandbox/Timely-Moving-Coffin',
+		repo: 'https://github.com/some-github-organization/test-repo',
 		config: fixtures.config.valid.filepath,
 		token: '123abc'
 	});
