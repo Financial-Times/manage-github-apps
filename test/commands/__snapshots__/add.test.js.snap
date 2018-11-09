@@ -10,10 +10,10 @@ exports[`running command handler with valid options generates expected log messa
       \\"The options you have specified have been parsed as:\\"
     ],
     [
-      \\"- GitHub organisation: financial-times-sandbox\\"
+      \\"- GitHub organisation: some-github-organization\\"
     ],
     [
-      \\"- GitHub repo: Timely-Moving-Coffin\\\\n\\"
+      \\"- GitHub repo: test-repo\\\\n\\"
     ]
   ],
   \\"message\\": [],
@@ -22,7 +22,7 @@ exports[`running command handler with valid options generates expected log messa
       \\"Authenticated as GitHub user testuser\\"
     ],
     [
-      \\"GitHub repo financial-times-sandbox/Timely-Moving-Coffin exists\\\\n\\"
+      \\"GitHub repo some-github-organization/test-repo exists\\\\n\\"
     ]
   ],
   \\"warning\\": [],
@@ -30,11 +30,11 @@ exports[`running command handler with valid options generates expected log messa
   \\"custom\\": [
     [
       \\"➕\\",
-      \\"Adding repo to installation Some bot (https://github.com/organizations/financial-times-sandbox/settings/installations/123456)\\"
+      \\"Adding repo to installation Some bot (https://github.com/organizations/some-github-organization/settings/installations/123456)\\"
     ],
     [
       \\"\\\\n➡️\\",
-      \\"Go to https://github.com/financial-times-sandbox/Timely-Moving-Coffin/settings/installations to see the installed GitHub apps for this repo.\\"
+      \\"Go to https://github.com/some-github-organization/test-repo/settings/installations to see the installed GitHub apps for this repo.\\"
     ]
   ]
 }"

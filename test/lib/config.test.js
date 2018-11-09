@@ -18,6 +18,7 @@ const nockScope = () => {
 };
 
 afterEach(() => {
+	jest.clearAllMocks();
 	nock.cleanAll();
 });
 

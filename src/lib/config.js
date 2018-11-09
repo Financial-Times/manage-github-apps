@@ -5,8 +5,20 @@ const path = require('path');
 const looksLikeUrl = require('./helpers/looks-like-url');
 const validation = require('./helpers/validation');
 
+/**
+ * This class is for loading a JSON configuration file and validating it against
+ * a JSON schema.
+ */
 class Config {
 
+	/**
+	 * Creates a new instance of the `Config` class.
+	 *
+	 * @param {object} options - Options
+	 * @param {string} options.source - Path to JSON configuration (URL or local filepath)
+	 * @param {object} options.schema - JSON Schema object
+	 * @throws {Error} - Throws error if `source` or `schema` option are missing
+	 */
 	constructor({ source, schema }) {
 		if (!source) {
 			throw new Error('Config#constructor: No `source` specified');
@@ -23,6 +35,13 @@ class Config {
 		this.loaded = false;
 	}
 
+	/**
+	 * Load JSON configuration from a URL or local filepath and validate it
+	 * against a JSON schema.
+	 *
+	 * @throws {Error} - Throws error if unable to load config or config is invalid
+	 * @returns {boolean} - Indicates if config was successfully loaded
+	 */
 	async load() {
 		let config;
 		let sourceDescription;
@@ -67,10 +86,22 @@ class Config {
 		return true;
 	}
 
+	/**
+	 * Indicates whether configuration has been loaded.
+	 *
+	 * @returns {boolean}
+	 */
 	isLoaded() {
 		return this.loaded;
 	}
 
+	/**
+	 * Get a property from the loaded configuration.
+	 *
+	 * @param {string} property - ???
+	 * @throws {Error} - Throws an error if config hasn't been loaded or config property doesn't exist
+	 * @returns {*} - ???
+	 */
 	get(property) {
 		if (!this.loaded) {
 			throw new Error(

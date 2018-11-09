@@ -2,7 +2,7 @@
  * These are unit tests for the `Github` class.
  *
  * For now, most of the methods in this class are a very thin wrapper around
- * @octokit/rest, so they don't warrant their own unit tets.
+ * GitHub's Octokit API client, so they don't warrant their own unit tets.
  *
  * Mocks used by these tests:
  *
@@ -21,6 +21,10 @@ const unsupportedRepoStrings = [
 	`this is junk subdomain.github.com/${expectedOwner}/${expectedRepo}`,
 	`this is absolute/rubbish that we will not support`,
 ];
+
+afterEach(() => {
+	jest.clearAllMocks();
+});
 
 supportedRepoStrings.forEach((githubRepoString) => {
 	test('calling `extractOwnerAndRepo` with `' + githubRepoString + '` returns `owner` and `repo`', () => {
