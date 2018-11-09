@@ -2,7 +2,7 @@ const validator = require('is-my-json-valid');
 
 const validation = {
 	dataAgainstSchema: (schema, data) => {
-		const validate = validator(schema);
+		const validate = validator(schema, { verbose: true });
 		if (validate(data)) {
 			return true;
 		}
@@ -14,7 +14,7 @@ const validation = {
 		}
 
 		return errors.map((err) => {
-			return `- ${validation.getFieldName(err.field)}${err.message}`;
+			return `- ${validation.getFieldName(err.field)}${err.message} (value: ${JSON.stringify(err.value)})`;
 		}).join('\n');
 	},
 	getFieldName: (name) => {

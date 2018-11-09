@@ -27,7 +27,7 @@ exports[`running command handler with an invalid config generates expected log m
   \\"warning\\": [],
   \\"error\\": [
     [
-      \\"ERROR: Config#load: The config is invalid:\\\\n\\\\n- 'installations.0.id' is the wrong type\\"
+      \\"ERROR: Config#load: The config is invalid:\\\\n\\\\n- 'installations.0.id' is the wrong type (value: \\\\\\"incorrect value\\\\\\")\\"
     ]
   ],
   \\"custom\\": []
