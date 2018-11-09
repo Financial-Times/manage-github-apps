@@ -1,8 +1,22 @@
 const Octokit = require('@octokit/rest');
 
+/**
+ * This class exposes an instance of GitHub's Octokit API client, provides
+ * convenience methods for some of the client's API methods, as well as some
+ * GitHub-related utility methods.
+ */
 class Github {
 
+	/**
+	 * Creates a new instance of the `Github` class, which itself exposes a
+	 * an instance of the GitHub Octokit client.
+	 *
+	 * @see https://github.com/octokit/rest.js
+	 */
 	constructor () {
+		/**
+		 * @type {import('@octokit/rest')}
+		 */
 		this.client = new Octokit();
 	}
 
@@ -26,8 +40,9 @@ class Github {
 	}
 
 	/**
-	 * Wrapper around octokit's `authenticate` method:
-	 * https://github.com/octokit/rest.js#authentication
+	 * Wrapper around octokit's `authenticate` method.
+	 *
+	 * @see https://github.com/octokit/rest.js#authentication
 	 *
 	 * @param {string} token - A GitHub personal access token
 	 */
@@ -42,8 +57,9 @@ class Github {
 	}
 
 	/**
-	 * Wrapper around octokit's `users.get` method:
-	 * https://octokit.github.io/rest.js/#api-Users-get
+	 * Wrapper around octokit's `users.get` method.
+	 *
+	 * @see https://octokit.github.io/rest.js/#api-Users-get
 	 *
 	 * @returns {object} - Data for GitHub user that the octokit client is authenticated as
 	 */
@@ -53,8 +69,9 @@ class Github {
 	}
 
 	/**
-	 * Wrapper around octokit's `repos.get` method:
-	 * https://octokit.github.io/rest.js/#api-Repos-get
+	 * Wrapper around octokit's `repos.get` method.
+	 *
+	 * @see https://octokit.github.io/rest.js/#api-Repos-get
 	 *
 	 * @param {object} - owner and repo
 	 * @returns {object} - Data for the GitHub repository

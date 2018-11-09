@@ -1,10 +1,17 @@
 /* eslint-disable no-console */
 
+/** yargs command module: validate-config */
+
 const Config = require('../lib/config');
 const logger = require('../lib/logger');
 
 const configSchema = require('../../schemas/config.schema.json');
 
+/**
+ * yargs handler function logic.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ */
 const main = async (argv) => {
 
 	const config = new Config({
@@ -19,6 +26,11 @@ const main = async (argv) => {
 
 };
 
+/**
+ * yargs builder function.
+ *
+ * @param {import('yargs/yargs').Yargs} yargs - Instance of yargs
+ */
 const builder = (yargs) => {
 
 	return yargs
@@ -30,6 +42,11 @@ const builder = (yargs) => {
 		});
 };
 
+/**
+ * yargs handler function with error handling wrapper around main logic.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ */
 const handler = async (argv) => {
 	try {
 		await main(argv);
@@ -39,6 +56,9 @@ const handler = async (argv) => {
 	}
 };
 
+/**
+ * @see https://github.com/yargs/yargs/blob/master/docs/advanced.md#providing-a-command-module
+ */
 module.exports = {
 	command: 'validate-config',
 	desc: 'Validate a JSON configuration against the manage-github-apps JSON schema',

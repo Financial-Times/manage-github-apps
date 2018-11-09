@@ -1,5 +1,7 @@
 /* eslint-disable no-console */
 
+/** yargs command module: add */
+
 const Config = require('../lib/config');
 const Github = require('../lib/github');
 const logger = require('../lib/logger');
@@ -8,6 +10,11 @@ const configSchema = require('../../schemas/config.schema.json');
 
 const github = new Github();
 
+/**
+ * yargs handler function logic.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ */
 const main = async (argv) => {
 
 	const config = new Config({
@@ -53,7 +60,9 @@ const main = async (argv) => {
 			})`
 		);
 
-		// https://octokit.github.io/rest.js/#api-Apps-addRepoToInstallation
+		/**
+		 * @see https://octokit.github.io/rest.js/#api-Apps-addRepoToInstallation
+		 */
 		return github.client.apps.addRepoToInstallation({
 			installation_id: installation.id,
 			repository_id: repoMeta.id
@@ -67,6 +76,11 @@ const main = async (argv) => {
 	);
 };
 
+/**
+ * yargs builder function.
+ *
+ * @param {import('yargs/yargs').Yargs} yargs - Instance of yargs
+ */
 const builder = (yargs) => {
 
 	return yargs
@@ -94,6 +108,11 @@ const builder = (yargs) => {
 		});
 };
 
+/**
+ * yargs handler function with error handling wrapper around main logic.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ */
 const handler = async (argv) => {
 	try {
 		await main(argv);
@@ -103,6 +122,9 @@ const handler = async (argv) => {
 	}
 };
 
+/**
+ * @see https://github.com/yargs/yargs/blob/master/docs/advanced.md#providing-a-command-module
+ */
 module.exports = {
 	command: 'add',
 	desc: 'Add a GitHub repository to GitHub App installations',
