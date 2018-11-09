@@ -1,6 +1,9 @@
-# manage-github-apps
+<p align="center">
+  <a href="https://github.com/Financial-Times/manage-github-apps"><img src="static/logo.svg" width="160" alt="manage github apps logo" title="manage github apps" /></a>
+</p>
+<p align="center">A CLI tool for managing the repositories for GitHub App installations<p>
 
-> A CLI tool for managing the repositories for GitHub App installations.
+---
 
 To use this tool you will need a JSON configuration file. You can find an
 [example configuration](test/fixtures/config/valid.json) in the test fixtures
