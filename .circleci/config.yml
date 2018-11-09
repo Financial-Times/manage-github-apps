@@ -1,0 +1,37 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/node:8
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - node-v10-{{ arch }}-{{ checksum "package-lock.json" }}
+            - node-v10-{{ arch }}-
+            - node-v10- # used if checksum fails
+
+      - run: npm install
+
+      - save_cache:
+          key: node-v10-{{ arch }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/usr/local/lib/node_modules
+            - node_modules/
+
+      - run: npm test
+
+      - run:
+          name: codecov
+          command: ./node_modules/.bin/codecov
+
+      - store_test_results:
+          path: test-results/jest/
+
+      - store_artifacts:
+          path: test-results/
