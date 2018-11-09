@@ -22,6 +22,10 @@ const unsupportedRepoStrings = [
 	`this is absolute/rubbish that we will not support`,
 ];
 
+afterEach(() => {
+	jest.clearAllMocks();
+});
+
 supportedRepoStrings.forEach((githubRepoString) => {
 	test('calling `extractOwnerAndRepo` with `' + githubRepoString + '` returns `owner` and `repo`', () => {
 
