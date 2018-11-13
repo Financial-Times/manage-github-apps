@@ -61,12 +61,12 @@ so you can copy and paste it when you need to in the following step.
     ```sh
     # Store the token in secret-tool.
     sudo apt install libsecret-tools
-    secret-tool store --label='manage-github-apps-token' "<REPLACE-WITH-YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>" "manage-github-apps"
+    echo -n "<REPLACE-WITH-YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>" | secret-tool store --label='manage-github-apps-token' token manage-github-apps
 
     # Retrieve the token from secret-tool.
     # Add the following to your shell's rcfile (~/.bashrc, ~/.zshrc or ~/.config/fish/config.fish)
     # so the token is available to any shell as an environment variable:
-    export MGA_GITHUB_PERSONAL_ACCESS_TOKEN=$(secret-tool lookup token "manage-github-apps")
+    export MGA_GITHUB_PERSONAL_ACCESS_TOKEN=$(secret-tool lookup token manage-github-apps)
 
     # Restart your terminal so the new environment variable is available.
     ```
