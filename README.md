@@ -59,11 +59,11 @@ so you can copy and paste it when you need to in the following step.
     **Ubuntu / Debian Linux**
 
     ```sh
-    # Store the token in secret-tool.
+    # Store the token in the GNOME Keyring with secret-tool.
     sudo apt install libsecret-tools
     echo -n "<REPLACE-WITH-YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>" | secret-tool store --label='manage-github-apps-token' token manage-github-apps
 
-    # Retrieve the token from secret-tool.
+    # Retrieve the token from the GNOME Keyring with secret-tool.
     # Add the following to your shell's rcfile (~/.bashrc, ~/.zshrc or ~/.config/fish/config.fish)
     # so the token is available to any shell as an environment variable:
     export MGA_GITHUB_PERSONAL_ACCESS_TOKEN=$(secret-tool lookup token manage-github-apps)
