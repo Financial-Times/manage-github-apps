@@ -77,3 +77,7 @@ so you can copy and paste it when you need to in the following step.
     ```sh
     --token $MGA_GITHUB_PERSONAL_ACCESS_TOKEN
     ```
+
+---
+
+Thanks to [@quarterto](https://github.com/quarterto) for the lovely logo :heart:
