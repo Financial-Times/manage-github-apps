@@ -8,7 +8,9 @@
 To use this tool you will need a JSON configuration file. You can find an
 [example configuration](test/fixtures/config/valid.json) in the test fixtures
 directory. Any JSON configuration file that you pass to this tool must validate
-against [this JSON schema](schemas/config.schema.json). 
+against [this JSON schema](schemas/config.schema.json). You will also require
+a [GitHub personal access token](#github-personal-access-token-security)
+with all `repo` scopes.
 
 ## Usage
 
@@ -28,55 +30,28 @@ Options:
   --help     Show help                                                 [boolean]
 ```
 
-## Storing your GitHub personal access token securely
+## GitHub personal access token security
 
 This tool requires a [GitHub personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
 with all `repo` scopes. This is _very powerful_ as it has access to modify a
 repository's settings, so it is strongly recommended that you store this token
 securely.
 
-1. Create a [new GitHub personal access token with all `repo` scopes](https://github.com/settings/tokens/new?description=Manage%20GitHub%20Apps%20CLI&scopes=repo "Click here to create a new GitHub personal access token").
+Once you have created a [new GitHub personal access token with all `repo` scopes](https://github.com/settings/tokens/new?description=Manage%20GitHub%20Apps%20CLI&scopes=repo "Click here to create a new GitHub personal access token"),
+you can store it in an environment variable and pass it to `manage-github-apps`
+whenever you run a command that requires the `--token` option:
 
-2. Make sure you keep the newly created token visible on the GitHub tokens page
-so you can copy and paste it when you need to in the following step.
+```sh
+--token $GITHUB_PERSONAL_ACCESS_TOKEN
+```
 
-3. Store the newly created token securely, but also make it easy to retrieve:
+You should avoid passing your GitHub personal access token directly to any CLI
+arguments as then it will be visible in your shell history.
 
-    **macOS / OS X**
-
-    ```sh
-    # Store the token in the macOS keychain.
-    security add-generic-password -a "$USER" -s "manage-github-apps" -w "<REPLACE-WITH-YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>"
-
-    # Retrieve the token from the macOS keychain.
-    # Add the following to your shell's rcfile (~/.bashrc, ~/.zshrc or ~/.config/fish/config.fish)
-    # so the token is available to any shell as an environment variable:
-    export MGA_GITHUB_PERSONAL_ACCESS_TOKEN=$(security find-generic-password -a "$USER" -s "manage-github-apps" -w)
-
-    # Restart your terminal so the new environment variable is available.
-    ```
-
-    **Ubuntu / Debian Linux**
-
-    ```sh
-    # Store the token in the GNOME Keyring with secret-tool.
-    sudo apt install libsecret-tools
-    echo -n "<REPLACE-WITH-YOUR-GITHUB-PERSONAL-ACCESS-TOKEN>" | secret-tool store --label='manage-github-apps-token' token manage-github-apps
-
-    # Retrieve the token from the GNOME Keyring with secret-tool.
-    # Add the following to your shell's rcfile (~/.bashrc, ~/.zshrc or ~/.config/fish/config.fish)
-    # so the token is available to any shell as an environment variable:
-    export MGA_GITHUB_PERSONAL_ACCESS_TOKEN=$(secret-tool lookup token manage-github-apps)
-
-    # Restart your terminal so the new environment variable is available.
-    ```
-
-4. When you run `manage-github-apps` with a command that requires the `--token`
-   option, you can then pass in the environment variable:
-
-    ```sh
-    --token $MGA_GITHUB_PERSONAL_ACCESS_TOKEN
-    ```
+A recommended approach is to store auth tokens in your operating system's
+password management system (e.g. Keychain on macOS), retrieve it in your shell's
+rcfile (e.g. `~/.bashrc`) and assign it to an environment variable so that it is
+available to any shell that you run.
 
 ---
 
