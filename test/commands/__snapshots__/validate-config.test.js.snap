@@ -1,35 +1,38 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`running command handler with a valid config generates expected log messages 1`] = `
-"{
-  \\"info\\": [
-    [
-      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/fixtures/config/valid.json\\\\n\\"
-    ]
+Object {
+  "custom": Array [],
+  "error": Array [],
+  "info": Array [
+    Array [
+      "Config: Read from URL: https://raw.githubusercontent.com/github-organization/github-apps-config/master/valid.json
+",
+    ],
   ],
-  \\"message\\": [],
-  \\"success\\": [
-    [
-      \\"Config is valid\\"
-    ]
+  "message": Array [],
+  "success": Array [
+    Array [
+      "Config is valid",
+    ],
   ],
-  \\"warning\\": [],
-  \\"error\\": [],
-  \\"custom\\": []
-}"
+  "warning": Array [],
+}
 `;
 
 exports[`running command handler with an invalid config generates expected log messages 1`] = `
-"{
-  \\"info\\": [],
-  \\"message\\": [],
-  \\"success\\": [],
-  \\"warning\\": [],
-  \\"error\\": [
-    [
-      \\"ERROR: Config#load: The config is invalid:\\\\n\\\\n- 'installations.0.id' is the wrong type (value: \\\\\\"incorrect value\\\\\\")\\"
-    ]
+Object {
+  "custom": Array [],
+  "error": Array [
+    Array [
+      "ERROR: Config#load: The config is invalid:
+
+- 'installations.0.id' is the wrong type (value: \\"incorrect value\\")",
+    ],
   ],
-  \\"custom\\": []
-}"
+  "info": Array [],
+  "message": Array [],
+  "success": Array [],
+  "warning": Array [],
+}
 `;

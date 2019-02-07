@@ -12,6 +12,7 @@
 
 // Third-party modules
 const yargs = require('yargs');
+const nock = require('nock');
 
 // User modules
 jest.mock('../../src/lib/logger');
@@ -23,6 +24,11 @@ const collectMockCalls = require('./helpers/collect-mock-calls');
 
 const fixtures = require('../fixtures');
 
+const nockScope = () => {
+	return nock(fixtures.config.urlHostname)
+		.defaultReplyHeaders({ 'Content-Type': 'application/json' });
+};
+
 const mockProcessExit = jest.spyOn(process, 'exit')
 	.mockImplementation((code) => code);
 
@@ -31,6 +37,7 @@ const mockConsoleWarn = jest.spyOn(console, 'warn')
 
 afterEach(() => {
 	jest.clearAllMocks();
+	nock.cleanAll();
 });
 
 test('`add` command module exports an object that can be used by yargs', () => {
@@ -60,7 +67,7 @@ test('yargs can load the `add` command without any errors or warnings', () => {
 test('running command handler without `repo` will exit process with error', async () => {
 	await addCommand.handler({
 		config: fixtures.config.valid.filepath,
-		token: '123abc'
+		token: '123abc',
 	});
 	expect(logger.error).toBeCalledWith(
 		expect.stringContaining('ERROR: Github#extractOwnerAndRepo')
@@ -71,7 +78,7 @@ test('running command handler without `repo` will exit process with error', asyn
 test('running command handler without `config` will exit process with error', async () => {
 	await addCommand.handler({
 		repo: 'https://github.com/some-github-organization/test-repo',
-		token: '123abc'
+		token: '123abc',
 	});
 	expect(logger.error).toBeCalledWith(
 		expect.stringContaining('ERROR: Config#constructor')
@@ -82,7 +89,7 @@ test('running command handler without `config` will exit process with error', as
 test('running command handler without `token` will exit process with error', async () => {
 	await addCommand.handler({
 		repo: 'https://github.com/some-github-organization/test-repo',
-		config: fixtures.config.valid.filepath
+		config: fixtures.config.valid.filepath,
 	});
 	expect(logger.error).toBeCalledWith(
 		expect.stringContaining('ERROR: Github#authenticateWithToken')
@@ -93,8 +100,8 @@ test('running command handler without `token` will exit process with error', asy
 test('running command handler with mismatching config owner and repo owner will exit process with error', async () => {
 	await addCommand.handler({
 		config: fixtures.config.valid.filepath,
+		repo: 'https://github.com/some-other-org/some-repo',
 		token: '123abc',
-		repo: 'https://github.com/some-other-org/some-repo'
 	});
 	expect(logger.error).toBeCalledWith(
 		expect.stringContaining('GitHubOwnerMismatch')
@@ -103,10 +110,14 @@ test('running command handler with mismatching config owner and repo owner will 
 });
 
 test('running command handler with valid options generates expected log messages', async () => {
+
+	nockScope().get(fixtures.config.valid.url.path)
+		.replyWithFile(200, fixtures.config.valid.filepath);
+
 	await addCommand.handler({
 		repo: 'https://github.com/some-github-organization/test-repo',
-		config: fixtures.config.valid.filepath,
-		token: '123abc'
+		config: fixtures.config.valid.url.get(),
+		token: '123abc',
 	});
 
 	const loggerOutput = collectMockCalls(logger);

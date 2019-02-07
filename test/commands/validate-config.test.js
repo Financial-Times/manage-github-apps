@@ -11,6 +11,7 @@
 
 // Third-party modules
 const yargs = require('yargs');
+const nock = require('nock');
 
 // User modules
 jest.mock('../../src/lib/logger');
@@ -22,6 +23,11 @@ const collectMockCalls = require('./helpers/collect-mock-calls');
 
 const fixtures = require('../fixtures');
 
+const nockScope = () => {
+	return nock(fixtures.config.urlHostname)
+		.defaultReplyHeaders({ 'Content-Type': 'application/json' });
+};
+
 const mockProcessExit = jest.spyOn(process, 'exit')
 	.mockImplementation((code) => code);
 
@@ -30,6 +36,7 @@ const mockConsoleWarn = jest.spyOn(console, 'warn')
 
 afterEach(() => {
 	jest.clearAllMocks();
+	nock.cleanAll();
 });
 
 test('`validate-config` command module exports an object that can be used by yargs', () => {
@@ -65,8 +72,12 @@ test('running command handler without `config` will exit process with error', as
 });
 
 test('running command handler with a valid config generates expected log messages', async () => {
+
+	nockScope().get(fixtures.config.valid.url.path)
+		.replyWithFile(200, fixtures.config.valid.filepath);
+
 	await validateConfigCommand.handler({
-		config: fixtures.config.valid.filepath
+		config: fixtures.config.valid.url.get()
 	});
 
 	expect(collectMockCalls(logger)).toMatchSnapshot();
@@ -75,8 +86,12 @@ test('running command handler with a valid config generates expected log message
 });
 
 test('running command handler with an invalid config generates expected log messages', async () => {
+
+	nockScope().get(fixtures.config.invalid.url.path)
+		.replyWithFile(200, fixtures.config.invalid.filepath);
+
 	await validateConfigCommand.handler({
-		config: fixtures.config.invalid.filepath
+		config: fixtures.config.invalid.url.get()
 	});
 
 	const loggerCalls = collectMockCalls(logger);

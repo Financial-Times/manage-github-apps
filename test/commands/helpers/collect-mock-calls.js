@@ -9,5 +9,5 @@ module.exports = (mockObject) => {
 		}
 	}
 
-	return JSON.stringify(mockMethodCalls, null, 2);
+	return mockMethodCalls;
 };
