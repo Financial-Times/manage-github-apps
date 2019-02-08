@@ -11,7 +11,7 @@
     "lint": "eslint src/",
     "lint-fix": "eslint --fix src/",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
-    "unit-test": "jest --coverage"
+    "unit-test": "jest"
   },
   "repository": {
     "type": "git",
@@ -35,11 +35,12 @@
     "eslint-plugin-no-only-tests": "^2.0.1",
     "husky": "^1.1.2",
     "jest": "^23.6.0",
+    "jest-junit": "^5.2.0",
     "nock": "^10.0.2",
     "prettier": "^1.14.3"
   },
   "engines": {
-    "node": "^10.15.0"
+    "node": "10.15.0"
   },
   "husky": {
     "hooks": {

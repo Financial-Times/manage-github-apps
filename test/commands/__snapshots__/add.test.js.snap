@@ -1,41 +1,45 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`running command handler with valid options generates expected log messages 1`] = `
-"{
-  \\"info\\": [
-    [
-      \\"Config: Read from local file: /home/simonplend/dev/work/clients/financial-times/managing-repos/manage-github-apps/test/fixtures/config/valid.json\\\\n\\"
+Object {
+  "custom": Array [
+    Array [
+      "➕",
+      "Adding repo to installation Some bot (https://github.com/organizations/some-github-organization/settings/installations/123456)",
     ],
-    [
-      \\"The options you have specified have been parsed as:\\"
+    Array [
+      "
+➡️",
+      "Go to https://github.com/some-github-organization/test-repo/settings/installations to see the installed GitHub apps for this repo.",
     ],
-    [
-      \\"- GitHub organisation: some-github-organization\\"
-    ],
-    [
-      \\"- GitHub repo: test-repo\\\\n\\"
-    ]
   ],
-  \\"message\\": [],
-  \\"success\\": [
-    [
-      \\"Authenticated as GitHub user testuser\\"
+  "error": Array [],
+  "info": Array [
+    Array [
+      "Config: Read from URL: https://raw.githubusercontent.com/github-organization/github-apps-config/master/valid.json
+",
     ],
-    [
-      \\"GitHub repo some-github-organization/test-repo exists\\\\n\\"
-    ]
+    Array [
+      "The options you have specified have been parsed as:",
+    ],
+    Array [
+      "- GitHub organisation: some-github-organization",
+    ],
+    Array [
+      "- GitHub repo: test-repo
+",
+    ],
   ],
-  \\"warning\\": [],
-  \\"error\\": [],
-  \\"custom\\": [
-    [
-      \\"➕\\",
-      \\"Adding repo to installation Some bot (https://github.com/organizations/some-github-organization/settings/installations/123456)\\"
+  "message": Array [],
+  "success": Array [
+    Array [
+      "Authenticated as GitHub user testuser",
     ],
-    [
-      \\"\\\\n➡️\\",
-      \\"Go to https://github.com/some-github-organization/test-repo/settings/installations to see the installed GitHub apps for this repo.\\"
-    ]
-  ]
-}"
+    Array [
+      "GitHub repo some-github-organization/test-repo exists
+",
+    ],
+  ],
+  "warning": Array [],
+}
 `;
