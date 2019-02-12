@@ -64,7 +64,7 @@ class Github {
 	 * @returns {object} - Data for GitHub user that the octokit client is authenticated as
 	 */
 	async getAuthenticatedUser () {
-		const user = await this.client.users.get();
+		const user = await this.client.users.getAuthenticated();
 		return user.data;
 	}
 
