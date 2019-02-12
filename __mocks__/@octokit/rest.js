@@ -1,7 +1,5 @@
 function Octokit () {}
 
-Octokit.prototype.authenticate = jest.fn();
-
 Octokit.prototype.apps = {
 	addRepoToInstallation: jest.fn().mockResolvedValue()
 };
@@ -15,7 +13,7 @@ Octokit.prototype.repos = {
 };
 
 Octokit.prototype.users = {
-	get: jest.fn().mockResolvedValue({
+	getAuthenticated: jest.fn().mockResolvedValue({
 		data: {
 			login: 'testuser'
 		}

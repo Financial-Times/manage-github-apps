@@ -8,8 +8,6 @@ const logger = require('../lib/logger');
 
 const configSchema = require('../../schemas/config.schema.json');
 
-const github = new Github();
-
 /**
  * yargs handler function logic.
  *
@@ -26,7 +24,7 @@ const main = async (argv) => {
 
 	logger.info(`Config: Read from ${config.sourceDescription}\n`);
 
-	const { owner, repo } = github.extractOwnerAndRepo(argv.repo);
+	const { owner, repo } = Github.extractOwnerAndRepo(argv.repo);
 
 	const configOwner = config.get('owner');
 	const configOwnerAndRepoOwnermatch = (configOwner === owner);
@@ -34,13 +32,13 @@ const main = async (argv) => {
 		throw new Error(`GitHubOwnerMismatch: The owner specified by the config (${configOwner}) and the owner of the repo (${owner}) do not match.\n   It is not possible to add the repo to the installations specified by the config.`);
 	}
 
-	const githubPersonalAccessToken = argv.token;
-
 	logger.info('The options you have specified have been parsed as:');
 	logger.info(`- GitHub organisation: ${owner}`);
 	logger.info(`- GitHub repo: ${repo}\n`);
 
-	github.authenticateWithToken(githubPersonalAccessToken);
+	const github = new Github({
+		personalAccessToken: argv.token
+	});
 
 	const authenticatedUser = await github.getAuthenticatedUser();
 	logger.success(`Authenticated as GitHub user ${authenticatedUser.login}`);
@@ -90,7 +88,7 @@ const builder = (yargs) => {
 			demandOption: true,
 			type: 'string',
 			coerce: (value) => {
-				github.extractOwnerAndRepo(value);
+				Github.extractOwnerAndRepo(value);
 				return value;
 			}
 		})

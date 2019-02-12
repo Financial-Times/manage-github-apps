@@ -41,12 +41,12 @@ afterEach(() => {
 });
 
 test('`add` command module exports an object that can be used by yargs', () => {
-	expect.objectContaining({
+	expect(addCommand).toEqual(expect.objectContaining({
 		command: expect.stringMatching('add'),
 		desc: expect.any(String),
 		builder: expect.any(Function),
 		handler: expect.any(Function)
-	});
+	}));
 });
 
 test('yargs can load the `add` command without any errors or warnings', () => {
@@ -92,7 +92,7 @@ test('running command handler without `token` will exit process with error', asy
 		config: fixtures.config.valid.filepath,
 	});
 	expect(logger.error).toBeCalledWith(
-		expect.stringContaining('ERROR: Github#authenticateWithToken')
+		expect.stringContaining('ERROR: Github#constructor')
 	);
 	expect(mockProcessExit).toBeCalledWith(1);
 });
