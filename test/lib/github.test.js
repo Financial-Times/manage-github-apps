@@ -29,8 +29,7 @@ afterEach(() => {
 supportedRepoStrings.forEach((githubRepoString) => {
 	test('calling `extractOwnerAndRepo` with `' + githubRepoString + '` returns `owner` and `repo`', () => {
 
-		const github = new Github();
-		const { owner, repo } = github.extractOwnerAndRepo(githubRepoString);
+		const { owner, repo } = Github.extractOwnerAndRepo(githubRepoString);
 
 		expect(owner).toEqual(expectedOwner);
 		expect(repo).toEqual(expectedRepo);
@@ -40,10 +39,8 @@ supportedRepoStrings.forEach((githubRepoString) => {
 unsupportedRepoStrings.forEach((githubRepoString) => {
 	test('calling `extractOwnerAndRepo` with `' + githubRepoString + '` will throw an error', () => {
 
-		const github = new Github();
-
 		expect(() => {
-			github.extractOwnerAndRepo(githubRepoString);
+			Github.extractOwnerAndRepo(githubRepoString);
 		}).toThrowError('Github#extractOwnerAndRepo');
 	});
 });

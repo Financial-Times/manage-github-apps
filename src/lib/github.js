@@ -12,12 +12,22 @@ class Github {
 	 * an instance of the GitHub Octokit client.
 	 *
 	 * @see https://github.com/octokit/rest.js
+	 *
+	 * @params {object} options
+	 * @params {string} options.personalAccessToken - GitHub personal access token
 	 */
-	constructor () {
+	constructor ({ personalAccessToken }) {
+		if (!personalAccessToken) {
+			throw new Error('Github#constructor: Invalid `personalAccessToken` option');
+		}
+
 		/**
 		 * @type {import('@octokit/rest')}
+		 * @see https://github.com/octokit/rest.js#authentication
 		 */
-		this.client = new Octokit();
+		this.client = new Octokit({
+			auth: `token ${personalAccessToken}`
+		});
 	}
 
 	/**
@@ -27,7 +37,7 @@ class Github {
 	 * @param {string} githubRepoString
 	 * @returns {object} - Properties: owner, repo
 	 */
-	extractOwnerAndRepo (githubRepoString) {
+	static extractOwnerAndRepo (githubRepoString) {
 		const extractOwnerAndRepoRegExp = /^(?:\S*github\.com(?:\/|:))?([\w-]+)\/([\w-]+)/;
 		const matches = extractOwnerAndRepoRegExp.exec(githubRepoString);
 
@@ -37,23 +47,6 @@ class Github {
 		const [, owner, repo] = matches;
 
 		return { owner, repo };
-	}
-
-	/**
-	 * Wrapper around octokit's `authenticate` method.
-	 *
-	 * @see https://github.com/octokit/rest.js#authentication
-	 *
-	 * @param {string} token - A GitHub personal access token
-	 */
-	authenticateWithToken (token) {
-		if (!token) {
-			throw new Error('Github#authenticateWithToken: No valid `token` specified');
-		}
-		this.client.authenticate({
-			type: 'token',
-			token
-		});
 	}
 
 	/**

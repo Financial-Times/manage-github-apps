@@ -92,7 +92,7 @@ test('running command handler without `token` will exit process with error', asy
 		config: fixtures.config.valid.filepath,
 	});
 	expect(logger.error).toBeCalledWith(
-		expect.stringContaining('ERROR: Github#authenticateWithToken')
+		expect.stringContaining('ERROR: Github#constructor')
 	);
 	expect(mockProcessExit).toBeCalledWith(1);
 });
