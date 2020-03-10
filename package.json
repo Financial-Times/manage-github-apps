@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/Financial-Times/manage-github-apps#readme",
   "dependencies": {
-    "@octokit/rest": "^16.0.0",
+    "@octokit/rest": "^17.0.0",
     "is-my-json-valid": "^2.19.0",
     "node-fetch": "^2.2.0",
     "yargs": "^15.0.0"
