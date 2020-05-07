@@ -1,4 +1,4 @@
-const Octokit = require('@octokit/rest');
+const { Octokit } = require('@octokit/rest');
 
 /**
  * This class exposes an instance of GitHub's Octokit API client, provides
