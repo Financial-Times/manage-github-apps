@@ -20,4 +20,4 @@ Octokit.prototype.users = {
 	})
 };
 
-module.exports = Octokit;
+module.exports = { Octokit };
