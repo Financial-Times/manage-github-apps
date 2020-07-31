@@ -55,4 +55,4 @@ available to any shell that you run.
 
 ---
 
-Thanks to [@quarterto](https://github.com/quarterto) for the lovely logo :heart:
+Thanks to [@apaleslimghost](https://github.com/apaleslimghost) for the lovely logo :heart:
