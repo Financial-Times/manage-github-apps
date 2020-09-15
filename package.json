@@ -40,7 +40,7 @@
     "prettier": "^1.14.3"
   },
   "engines": {
-    "node": "10.17.0"
+    "node": "10.22.1"
   },
   "husky": {
     "hooks": {
