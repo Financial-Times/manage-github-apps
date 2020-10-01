@@ -4,21 +4,21 @@ jobs:
 
   build:
     docker:
-      - image: circleci/node:10.17.0
+      - image: circleci/node:14-browsers
 
     steps:
       - checkout
 
       - restore_cache:
           keys:
-            - node-v10-{{ arch }}-{{ checksum "package.json" }}
-            - node-v10-{{ arch }}-
-            - node-v10- # used if checksum fails
+            - node-v14-{{ arch }}-{{ checksum "package.json" }}
+            - node-v14-{{ arch }}-
+            - node-v14- # used if checksum fails
 
       - run: npm install
 
       - save_cache:
-          key: node-v10-{{ arch }}-{{ checksum "package.json" }}
+          key: node-v14-{{ arch }}-{{ checksum "package.json" }}
           paths:
             - ~/usr/local/lib/node_modules
             - node_modules/
