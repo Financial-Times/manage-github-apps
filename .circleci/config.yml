@@ -6,7 +6,7 @@ references:
 
   filters_ignore_renovate_nori: &filters_ignore_renovate_nori
     branches:
-      ignore: /(^renovate-.*|^nori\/.*|^master)/
+      ignore: /(^renovate-.*|^nori\/.*|^main)/
 
 version: 2
 
