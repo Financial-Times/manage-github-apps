@@ -57,7 +57,7 @@ const handler = async (argv) => {
 };
 
 /**
- * @see https://github.com/yargs/yargs/blob/master/docs/advanced.md#providing-a-command-module
+ * @see https://github.com/yargs/yargs/blob/HEAD/docs/advanced.md#providing-a-command-module
  */
 module.exports = {
 	command: 'validate-config',

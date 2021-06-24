@@ -13,7 +13,7 @@ const fixtures = {
 		valid: {
 			filepath: path.resolve(`${FIXTURES_CONFIG_PATH}/valid.json`),
 			url: {
-				path: '/github-organization/github-apps-config/master/valid.json',
+				path: '/github-organization/github-apps-config/HEAD/valid.json',
 				get: () => `${fixtures.config.urlHostname}${fixtures.config.valid.url.path}`
 			}
 		},
@@ -21,7 +21,7 @@ const fixtures = {
 		invalid: {
 			filepath: path.resolve(`${FIXTURES_CONFIG_PATH}/invalid.json`),
 			url: {
-				path: '/github-organization/github-apps-config/master/invalid.json',
+				path: '/github-organization/github-apps-config/HEAD/invalid.json',
 				get: () => `${fixtures.config.urlHostname}${fixtures.config.invalid.url.path}`
 			}
 		},
@@ -29,7 +29,7 @@ const fixtures = {
 		invalidJson: {
 			filepath: path.resolve(`${FIXTURES_CONFIG_PATH}/invalid-json.json`),
 			url: {
-				path: '/github-organization/github-apps-config/master/invalid-json.json',
+				path: '/github-organization/github-apps-config/HEAD/invalid-json.json',
 				get: () => `${fixtures.config.urlHostname}${fixtures.config.invalidJson.url.path}`
 			}
 		},
@@ -37,7 +37,7 @@ const fixtures = {
 		nonExistent: {
 			filepath: path.resolve(`${FIXTURES_CONFIG_PATH}/non-existent.json`),
 			url: {
-				path: '/github-organization/github-apps-config/master/non-existent.json',
+				path: '/github-organization/github-apps-config/HEAD/non-existent.json',
 				get: () => `${fixtures.config.urlHostname}${fixtures.config.nonExistent.url.path}`
 			}
 		},

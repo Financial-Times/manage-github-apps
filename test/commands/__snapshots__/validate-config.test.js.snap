@@ -6,7 +6,7 @@ Object {
   "error": Array [],
   "info": Array [
     Array [
-      "Config: Read from URL: https://raw.githubusercontent.com/github-organization/github-apps-config/master/valid.json
+      "Config: Read from URL: https://raw.githubusercontent.com/github-organization/github-apps-config/HEAD/valid.json
 ",
     ],
   ],
