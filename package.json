@@ -11,7 +11,8 @@
     "lint": "eslint src/",
     "lint-fix": "eslint --fix src/",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
-    "unit-test": "jest"
+    "unit-test": "jest",
+    "preinstall": "npm_config_yes=true npx check-engine"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "yargs": "^16.0.0"
   },
   "devDependencies": {
+    "check-engines": "^1.5.0",
     "eslint": "^5.7.0",
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-no-only-tests": "^2.0.1",
@@ -40,7 +42,8 @@
     "prettier": "^1.14.3"
   },
   "engines": {
-    "node": "12.x"
+    "node": "12.x",
+    "npm": "7.x"
   },
   "husky": {
     "hooks": {
@@ -48,7 +51,7 @@
     }
   },
   "volta": {
-    "node": "12.22.4",
+    "node": "12.22.5",
     "npm": "7.20.2"
   }
 }

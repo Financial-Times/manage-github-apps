@@ -8,7 +8,10 @@ references:
     branches:
       ignore: /(^renovate-.*|^nori\/.*|^main)/
 
-version: 2
+version: 2.1
+
+orbs:
+  node: circleci/node@4.6.0
 
 jobs:
 
@@ -24,6 +27,9 @@ jobs:
             - node-v12-{{ arch }}-{{ checksum "package.json" }}
             - node-v12-{{ arch }}-
             - node-v12- # used if checksum fails
+
+      - node/install-npm:
+          version: "7"
 
       - run: npm install
 
