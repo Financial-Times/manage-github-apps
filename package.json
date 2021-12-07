@@ -12,7 +12,7 @@
     "lint-fix": "eslint --fix src/",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
     "unit-test": "jest",
-    "preinstall": "echo $INIT_CWD && echo $PWD || exit 0"
+    "preinstall-": "[ \"$INIT_CWD\" != \"$PWD\" ] || npm_config_yes=true npx check-engine"
   },
   "repository": {
     "type": "git",
