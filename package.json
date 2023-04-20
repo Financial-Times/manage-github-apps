@@ -27,7 +27,7 @@
   "dependencies": {
     "@octokit/rest": "^18.9.0",
     "is-my-json-valid": "^2.19.0",
-    "node-fetch": "^2.2.0",
+    "node-fetch": "^3.0.0",
     "yargs": "^16.0.0"
   },
   "devDependencies": {
