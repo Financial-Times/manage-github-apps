@@ -17,7 +17,7 @@ jobs:
 
   build:
     docker:
-      - image: cimg/node:16.14
+      - image: cimg/node:18.16
 
     steps:
       - checkout
@@ -27,9 +27,6 @@ jobs:
             - node-v12-{{ arch }}-{{ checksum "package.json" }}
             - node-v12-{{ arch }}-
             - node-v12- # used if checksum fails
-
-      - node/install-npm:
-          version: "7"
 
       - run: npm install
 
