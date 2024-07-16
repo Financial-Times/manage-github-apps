@@ -1,3 +1,8 @@
+> [!WARNING]  
+> **Deprecated**: Github app installation is managed centrally by the [Code Management](https://financialtimes.enterprise.slack.com/archives/C02ST9MNV0S) team.
+
+---
+
 <p align="center">
   <a href="https://github.com/Financial-Times/manage-github-apps"><img src="static/logo.svg" width="160" alt="manage github apps logo" title="manage github apps" /></a>
 </p>
